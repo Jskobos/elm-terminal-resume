@@ -13,12 +13,16 @@ import Keyboard.Event exposing (KeyboardEvent, decodeKeyboardEvent)
 
 
 type alias Model =
-    {}
+    {
+        activeView: String
+    }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( {}, Cmd.none )
+    ( {
+        activeView = "Welcome"
+    }, Cmd.none )
 
 
 
@@ -26,13 +30,28 @@ init =
 
 
 type Msg
-    = NoOp
+    = HandleKeyboardEvent KeyboardEvent
+    | NoOp
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        HandleKeyboardEvent event ->
+            ( { model | activeView = getActiveView event.key }
+            , Cmd.none
+            )
 
+        NoOp ->
+            ( model, Cmd.none )
+
+getActiveView : Maybe String -> String
+getActiveView event =
+    case event of
+        Just key ->
+            key
+        Nothing ->
+            "Welcome"
 
 
 ---- VIEW ----
