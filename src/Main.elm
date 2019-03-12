@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, text, div, h1, img)
+import Html exposing (Html, text, div, h1, img, p, pre)
 import Html.Attributes exposing (class, classList, src)
 
 
@@ -42,9 +42,9 @@ view model =
 
 topBar =
     div [class "flex flex-row items-center justify-start topbar bg-grey-darkest"] [
-        dot "bg-red-light",
+        div [class "flex flex-row items-center justify-center pl-2"] [dot "bg-red-light",
         dot "bg-yellow",
-        dot "bg-green"
+        dot "bg-green"]
     ]
 
 dot : String -> Html Msg
@@ -56,9 +56,39 @@ dot color =
         ] ] []
 
 body =
-    div [class "terminal bg-black"] []
+    div [class "terminal bg-black"] [terminalHeader, terminalContent "", terminalFooter]
 
+terminalContent content =
+    div [class "terminal-content"] [text content]
 
+terminalFooter =
+    div [class "terminal-footer"] [
+        div [class "flex flex-row"] [
+            footerItem "^S" "Summary",
+            footerItem "^W" "Work Experience",
+            footerItem "^E" "Education",
+            footerItem "^C" "Contact Info",
+            footerItem "^L" "Links",
+            footerItem "^F" "Leave feedback",
+            footerItem "^Z" "Change Language",
+            footerItem "^T" "Change Theme"
+        ]
+    ]
+
+terminalHeader =
+    div [class "terminal-header "] [
+        div [class "bg-grey-light w-full flex flex-row items-center justify-start p-1"] [
+            p [class "w-1/3 flex justify-start"] [text "JSK resume 0.0.1"],
+            p [class "w-2/3 flex justify-start"] [text "New Buffer"]
+        ]
+    ]
+
+footerItem : String -> String -> Html Msg
+footerItem key description =
+    div [class "flex flex-row text-white p-1 mr-32"] [
+        p [class "m-2 bg-grey-light text-black"] [text key],
+        p [class "m-2"] [text description]
+    ]
 
 ---- PROGRAM ----
 

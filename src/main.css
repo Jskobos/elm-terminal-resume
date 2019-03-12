@@ -33,3 +33,15 @@ body {
   width: 100%;
   height: 97%;
 }
+
+.terminal-header {
+  height: 5%;
+}
+
+.terminal-footer {
+  height: 10%;
+}
+
+.terminal-content {
+  height: 85%;
+}
