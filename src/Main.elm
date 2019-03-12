@@ -1,8 +1,12 @@
 module Main exposing (..)
 
 import Browser
+import Browser.Events exposing (onKeyDown)
 import Html exposing (Html, text, div, h1, img, p, pre)
 import Html.Attributes exposing (class, classList, src)
+import Html.Events exposing (on)
+import Json.Decode as Json
+import Keyboard.Event exposing (KeyboardEvent, decodeKeyboardEvent)
 
 
 ---- MODEL ----
@@ -90,6 +94,12 @@ footerItem key description =
         p [class "m-2"] [text description]
     ]
 
+---- SUBSCRIPTIONS ----
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    onKeyDown (Json.map HandleKeyboardEvent decodeKeyboardEvent)
+
 ---- PROGRAM ----
 
 
@@ -99,5 +109,5 @@ main =
         { view = view
         , init = \_ -> init
         , update = update
-        , subscriptions = always Sub.none
+        , subscriptions = subscriptions
         }
