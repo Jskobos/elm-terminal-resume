@@ -36,7 +36,7 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div []
+    div [class "h-screen w-screen"]
         [ topBar, body
         ]
 
