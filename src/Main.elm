@@ -15,7 +15,7 @@ type alias Flags = {}
 ---- MODEL ----
 
 type ActiveView =
-    Welcome | Summary | Experience | Education | Contact | Links | Feedback | Language
+    Welcome | Summary | Experience | Education | Contact | Links | Feedback | Language | Theme
 
 type alias Model =
     {
@@ -58,6 +58,20 @@ getActiveView ctrl event =
                 case key of
                     "s" ->
                         Summary
+                    "w" ->
+                        Experience
+                    "c" ->
+                        Contact
+                    "e" ->
+                        Education
+                    "f" ->
+                        Feedback
+                    "z" ->
+                        Language
+                    "t" ->
+                        Theme
+                    "l" ->
+                        Links
                     _ ->
                         Welcome
             Nothing ->
@@ -137,7 +151,7 @@ terminalHeader =
 
 footerItem : String -> String -> Html Msg
 footerItem key description =
-    div [class "flex flex-row text-white p-1 mr-32"] [
+    div [class "flex flex-row text-white p-1 w-1/6"] [
         p [class "m-2 bg-grey-light text-black"] [text key],
         p [class "m-2"] [text description]
     ]
