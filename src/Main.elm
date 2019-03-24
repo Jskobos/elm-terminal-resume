@@ -14,23 +14,24 @@ type alias Flags = {}
 
 ---- MODEL ----
 
+type ActiveView =
+    Welcome | Summary | Experience | Education | Contact | Links | Feedback | Language
 
 type alias Model =
     {
-        activeView: String
+        activeView: ActiveView
     }
 
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
     ( {
-        activeView = "Welcome"
+        activeView = Welcome
     }, Dom.focus "outermost" |> Task.attempt (always NoOp) )
 
 
 
 ---- UPDATE ----
-
 
 type Msg
     = HandleKeyboardEvent KeyboardEvent
@@ -41,20 +42,26 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         HandleKeyboardEvent event ->
-            ( { model | activeView = getActiveView event.key }
+            ( { model | activeView = getActiveView event.ctrlKey event.key }
             , Cmd.none
             )
 
         NoOp ->
             ( model, Cmd.none )
 
-getActiveView : Maybe String -> String
-getActiveView event =
-    case event of
-        Just key ->
-            key
-        Nothing ->
-            "Welcome"
+getActiveView : Bool -> Maybe String -> ActiveView
+getActiveView ctrl event =
+    if (not ctrl) then Welcome
+    else
+        case event of
+            Just key ->
+                case key of
+                    "s" ->
+                        Summary
+                    _ ->
+                        Welcome
+            Nothing ->
+                Welcome
 
 
 ---- VIEW ----
@@ -74,7 +81,7 @@ view model =
         ]
         [
             div [class "h-screen w-screen"]
-                [ topBar, body, div [style "color" "white"] [text model.activeView]
+                [ topBar, body model.activeView
                 ]
         ]
 
@@ -93,11 +100,18 @@ dot color =
           ("m-1", True)
         ] ] []
 
-body =
-    div [class "terminal bg-black"] [terminalHeader, terminalContent "", terminalFooter]
+body activeView =
+    div [class "terminal bg-black"] [terminalHeader, terminalContent activeView, terminalFooter]
 
-terminalContent content =
-    div [class "terminal-content"] [text content]
+terminalContent activeView =
+    case activeView of
+        Welcome -> 
+            div [class "terminal-content"] [text "Welcome"]
+        Summary ->
+            div [class "terminal-content"] [text "Summary"]
+        _ -> 
+            div [class "terminal-content"] [text "Section coming soon"]
+  
 
 terminalFooter =
     div [class "terminal-footer"] [
