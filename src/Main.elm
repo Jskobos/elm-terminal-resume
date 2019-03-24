@@ -42,40 +42,47 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         HandleKeyboardEvent event ->
-            ( { model | activeView = getActiveView event.ctrlKey event.key }
-            , Cmd.none
-            )
+            let
+                newView = getActiveView event.ctrlKey event.key
+            in
+            case newView of
+                Just v ->
+                    ( { model | activeView = v }
+                    , Cmd.none
+                    )
+                Nothing ->
+                    ( model, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )
 
-getActiveView : Bool -> Maybe String -> ActiveView
+getActiveView : Bool -> Maybe String -> Maybe ActiveView
 getActiveView ctrl event =
-    if (not ctrl) then Welcome
+    if (not ctrl) then Nothing
     else
         case event of
             Just key ->
                 case key of
                     "s" ->
-                        Summary
+                        Just Summary
                     "w" ->
-                        Experience
+                        Just Experience
                     "c" ->
-                        Contact
+                        Just Contact
                     "e" ->
-                        Education
+                        Just Education
                     "f" ->
-                        Feedback
+                        Just Feedback
                     "z" ->
-                        Language
+                        Just Language
                     "t" ->
-                        Theme
+                        Just Theme
                     "l" ->
-                        Links
+                        Just Links
                     _ ->
-                        Welcome
+                        Nothing
             Nothing ->
-                Welcome
+                Nothing
 
 
 ---- VIEW ----
@@ -115,16 +122,16 @@ dot color =
         ] ] []
 
 body activeView =
-    div [class "terminal bg-black"] [terminalHeader, terminalContent activeView, terminalFooter]
+    div [class "terminal bg-black"] [terminalHeader, div [class "terminal-content"] [terminalContent activeView], terminalFooter]
 
 terminalContent activeView =
     case activeView of
         Welcome -> 
-            div [class "terminal-content"] [text "Welcome"]
+            text "Welcome"
         Summary ->
-            div [class "terminal-content"] [text "Summary"]
+            text "Summary"
         _ -> 
-            div [class "terminal-content"] [text "Section coming soon"]
+            text "Section coming soon"
   
 
 terminalFooter =
