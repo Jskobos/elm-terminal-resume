@@ -1,13 +1,16 @@
 module Main exposing (..)
 
 import Browser
+import Browser.Dom as Dom
 import Browser.Events exposing (onKeyDown)
 import Html exposing (Html, text, div, h1, img, p, pre)
-import Html.Attributes exposing (class, classList, src)
+import Html.Attributes exposing (class, classList, id, src, style, tabindex)
 import Html.Events exposing (on)
 import Json.Decode as Json
 import Keyboard.Event exposing (KeyboardEvent, decodeKeyboardEvent)
+import Task
 
+type alias Flags = {}
 
 ---- MODEL ----
 
@@ -18,11 +21,11 @@ type alias Model =
     }
 
 
-init : ( Model, Cmd Msg )
-init =
+init : Flags -> ( Model, Cmd Msg )
+init _ =
     ( {
         activeView = "Welcome"
-    }, Cmd.none )
+    }, Dom.focus "outermost" |> Task.attempt (always NoOp) )
 
 
 
@@ -59,8 +62,20 @@ getActiveView event =
 
 view : Model -> Html Msg
 view model =
-    div [class "h-screen w-screen"]
-        [ topBar, body
+    div [ on "keydown" <|
+            Json.map HandleKeyboardEvent decodeKeyboardEvent
+        , tabindex 0
+        , id "outermost"
+        , style "position" "absolute"
+        , style "height" "100%"
+        , style "width" "100%"
+        , style "overflow" "hidden"
+        , style "outline" "none"
+        ]
+        [
+            div [class "h-screen w-screen"]
+                [ topBar, body, div [style "color" "white"] [text model.activeView]
+                ]
         ]
 
 topBar =
@@ -122,11 +137,11 @@ subscriptions model =
 ---- PROGRAM ----
 
 
-main : Program () Model Msg
+main : Program Flags Model Msg
 main =
     Browser.element
         { view = view
-        , init = \_ -> init
+        , init = init
         , update = update
         , subscriptions = subscriptions
         }
