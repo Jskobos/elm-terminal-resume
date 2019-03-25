@@ -129,7 +129,9 @@ terminalContent activeView =
         Welcome -> 
             text "Welcome"
         Summary ->
-            text "Summary"
+            summary
+        Education ->
+            education
         _ -> 
             text "Section coming soon"
   
@@ -161,6 +163,27 @@ footerItem key description =
     div [class "flex flex-row text-white p-1 w-1/6"] [
         p [class "m-2 bg-grey-light text-black"] [text key],
         p [class "m-2"] [text description]
+    ]
+
+
+--- DISPLAY SECTIONS ---
+summary =
+    div [class "text-left ml-2 body-text"] [
+        p [] [text "Jared Kobos"],
+        p [] [text "JavaScript Developer at Linode"],
+        p [] [text "Works with React, Redux, Jest, and Hugo. Also a fan of Elm, Go, and Python."]
+    ]
+
+education =
+    div [class "text-left ml-2 body-text flex flex-col justify-between h-full"] [
+        div [] [
+            p [] [text "Bachelor of Music Education (University of Delaware)"],
+            p [] [text "Master of Music (Florida State University)"],
+            p [] [text "Doctor of Musical Arts* (Michigan State University)"]
+        ],
+        div [] [
+            p [class "text-right"] [text "* (it's a long story)"]
+        ]     
     ]
 
 ---- SUBSCRIPTIONS ----

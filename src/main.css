@@ -10,7 +10,9 @@
 }
 
 body {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: 'Ubuntu Mono', monospace;
+  font-weight: 100;
+  font-size: 1.3em;
   margin: 0;
   text-align: center;
   color: #293c4b;
@@ -44,5 +46,10 @@ body {
 
 .terminal-content {
   height: 85%;
-  color: white;
+  color: #f1f5f8;
+  opacity: 0.8;
+}
+
+.body-text {
+  line-height: 2.5;
 }
