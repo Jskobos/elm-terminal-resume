@@ -3,7 +3,7 @@ module Main exposing (..)
 import Browser
 import Browser.Dom as Dom
 import Browser.Events exposing (onKeyDown)
-import Html exposing (Html, text, div, h1, img, p, pre)
+import Html exposing (Html, text, div, h1, img, p, pre, span)
 import Html.Attributes exposing (class, classList, id, src, style, tabindex)
 import Html.Events exposing (on)
 import Json.Decode as Json
@@ -132,6 +132,8 @@ terminalContent activeView =
             summary
         Education ->
             education
+        Experience ->
+            experience
         _ -> 
             text "Section coming soon"
   
@@ -167,16 +169,24 @@ footerItem key description =
 
 
 --- DISPLAY SECTIONS ---
+
+
+sectionTitle : String -> Html Msg
+sectionTitle title =
+    p [class "text-2xl"] [text title]
+
 summary =
     div [class "text-left ml-2 body-text"] [
+        sectionTitle "Summary",
         p [] [text "Jared Kobos"],
         p [] [text "JavaScript Developer at Linode"],
-        p [] [text "Works with React, Redux, Jest, and Hugo. Also a fan of Elm, Go, and Python."]
+        p [] [text "Works with React, Redux, Jest, Typescript, and Hugo. Also a fan of Elm, Go, and Python."]
     ]
 
 education =
     div [class "text-left ml-2 body-text flex flex-col justify-between h-full"] [
         div [] [
+            sectionTitle "Education",
             p [] [text "Bachelor of Music Education (University of Delaware)"],
             p [] [text "Master of Music (Florida State University)"],
             p [] [text "Doctor of Musical Arts* (Michigan State University)"]
@@ -185,6 +195,60 @@ education =
             p [class "text-right"] [text "* (it's a long story)"]
         ]     
     ]
+
+type alias WorkItem = 
+    {
+        company : String,
+        position : String,
+        location : String,
+        start : String,
+        end : String,
+        description : List String
+    }
+
+items = 
+    [
+        WorkItem "Linode" "JavaScript Developer" "Philadelphia, PA" "05-01-18" "" [
+            "Design and implement features for front end applications",
+            "Coordinate releases",
+            "Research and present patterns to improve the codebase"
+            ],
+        WorkItem "Linode" "Technical Writer" "Philadelphia, PA" "09-06-17" "05-01-18" [
+            "Write, edit, and tech edit documentation on Linux-related topics",
+            "Use continuous integration and scripting to improve quality of documentation library"
+            ],
+        WorkItem "EF Education First" "Content Writer" "Shanghai, CN" "02-04-16" "08-21-17" [
+            "Write textbook and online content for an international education company"
+            ],
+        WorkItem "EF Education First" "International Teacher" "Shanghai, CN" "07-18-13" "02-04-16" [
+            "Teach English to Chinese kids",
+            "School Fire and Safety Coordinator (no one died on my watch)"
+            ]
+    ]
+
+experience =
+    div [class "text-left ml-2 body-text"] [
+        sectionTitle "Work Experience",
+        div [] (List.map renderWorkItem items)
+    ]
+
+renderWorkItem : WorkItem -> Html Msg
+renderWorkItem item =
+    let 
+        dates = if item.end == "" then (item.start ++ " - Present")
+                else (item.start ++ " - " ++ item.end)
+    in 
+    div [class "mt-6"] [
+        p [class "leading-tight w-full flex flex-row justify-between"] [
+            span [] [text (item.position ++ "  --  " ++ (item.company ++ " (" ++ item.location ++ ")"))],
+            span [class "mr-6"] [text dates]
+        ],
+        div [class "leading-normal"] (List.map renderDescription item.description)
+    ]
+
+renderDescription : String -> (Html Msg)
+renderDescription desc =
+    p [] [text (" - " ++ desc)]
 
 ---- SUBSCRIPTIONS ----
 
