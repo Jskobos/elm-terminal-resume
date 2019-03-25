@@ -122,7 +122,7 @@ dot color =
         ] ] []
 
 body activeView =
-    div [class "terminal bg-black"] [terminalHeader, div [class "terminal-content"] [terminalContent activeView], terminalFooter]
+    div [class "terminal bg-black"] [terminalHeader activeView, div [class "terminal-content"] [terminalContent activeView], terminalFooter]
 
 terminalContent activeView =
     case activeView of
@@ -140,7 +140,7 @@ terminalContent activeView =
 
 terminalFooter =
     div [class "terminal-footer"] [
-        div [class "flex flex-row"] [
+        div [class "flex flex-row flex-wrap"] [
             footerItem "^S" "Summary",
             footerItem "^W" "Work Experience",
             footerItem "^E" "Education",
@@ -152,13 +152,35 @@ terminalFooter =
         ]
     ]
 
-terminalHeader =
+terminalHeader activeView =
     div [class "terminal-header "] [
         div [class "bg-grey-light w-full flex flex-row items-center justify-start p-1"] [
             p [class "w-1/3 flex justify-start"] [text "JSK resume 0.0.1"],
-            p [class "w-2/3 flex justify-start"] [text "New Buffer"]
+            p [class "w-2/3 flex justify-start"] [text (headerText activeView)]
         ]
     ]
+
+headerText : ActiveView -> String
+headerText currentView =
+    case currentView of
+        Summary ->
+            "summary.txt"
+        Education ->
+            "education.txt"
+        Experience ->
+            "work_experience.txt"
+        Contact ->
+            "contact_info.txt"
+        Feedback ->
+            "feedback_form.txt"
+        Theme ->
+            "theme.txt"
+        Language ->
+            "language_select.txt"
+        Welcome ->
+            "New Buffer"
+        Links ->
+            "links.txt"
 
 footerItem : String -> String -> Html Msg
 footerItem key description =
