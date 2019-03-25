@@ -262,7 +262,7 @@ renderWorkItem item =
     in 
     div [class "mt-6"] [
         p [class "leading-tight w-full flex flex-row justify-between"] [
-            span [] [text (item.position ++ "  --  " ++ (item.company ++ " (" ++ item.location ++ ")"))],
+            span [] [text (item.position ++ "  :  " ++ (item.company ++ " (" ++ item.location ++ ")"))],
             span [class "mr-6"] [text dates]
         ],
         div [class "leading-normal"] (List.map renderDescription item.description)
