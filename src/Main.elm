@@ -3,9 +3,9 @@ module Main exposing (..)
 import Browser
 import Browser.Dom as Dom
 import Browser.Events exposing (onKeyDown)
-import Html exposing (Html, text, div, h1, img, p, pre, span)
-import Html.Attributes exposing (class, classList, id, src, style, tabindex)
-import Html.Events exposing (on)
+import Html exposing (Html, a, text, div, h1, img, input, p, pre, span)
+import Html.Attributes exposing (class, classList, href, id, src, style, tabindex, value)
+import Html.Events exposing (on, onInput)
 import Json.Decode as Json
 import Keyboard.Event exposing (KeyboardEvent, decodeKeyboardEvent)
 import Task
@@ -19,14 +19,16 @@ type ActiveView =
 
 type alias Model =
     {
-        activeView: ActiveView
+        activeView: ActiveView,
+        inputText: String
     }
 
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
     ( {
-        activeView = Welcome
+        activeView = Welcome,
+        inputText = ""
     }, Dom.focus "outermost" |> Task.attempt (always NoOp) )
 
 
@@ -35,6 +37,7 @@ init _ =
 
 type Msg
     = HandleKeyboardEvent KeyboardEvent
+    | TextInput String
     | NoOp
 
 
@@ -52,7 +55,8 @@ update msg model =
                     )
                 Nothing ->
                     ( model, Cmd.none )
-
+        TextInput input ->
+            ( { model | inputText = input }, Cmd.none )
         NoOp ->
             ( model, Cmd.none )
 
@@ -102,7 +106,7 @@ view model =
         ]
         [
             div [class "h-screen w-screen"]
-                [ topBar, body model.activeView
+                [ topBar, body model
                 ]
         ]
 
@@ -121,19 +125,21 @@ dot color =
           ("m-1", True)
         ] ] []
 
-body activeView =
-    div [class "terminal bg-black"] [terminalHeader activeView, div [class "terminal-content"] [terminalContent activeView], terminalFooter]
+body model =
+    div [class "terminal bg-black"] [terminalHeader model.activeView, div [class "terminal-content"] [terminalContent model], terminalFooter]
 
-terminalContent activeView =
-    case activeView of
+terminalContent model =
+    case model.activeView of
         Welcome -> 
-            text "Welcome"
+            welcome model
         Summary ->
             summary
         Education ->
             education
         Experience ->
             experience
+        Links ->
+            links
         _ -> 
             text "Section coming soon"
   
@@ -270,6 +276,19 @@ renderWorkItem item =
 renderDescription : String -> (Html Msg)
 renderDescription desc =
     p [] [text (" - " ++ desc)]
+
+links =
+    div [class "flex flex-column justify-start"] [
+        renderLinkItem "https://github.com/jskobos" "Github Profile"
+    ]
+
+renderLinkItem url description =
+    a [href url] [text description]
+
+welcome model =
+    div [class "flex flex-column justify-start w-full"] [
+        input [value model.inputText, onInput TextInput, class "bg-black text-white text-left" ] []
+    ]
 
 ---- SUBSCRIPTIONS ----
 

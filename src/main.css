@@ -20,6 +20,10 @@ body {
   width: 100%;
 }
 
+input[type=text] {
+  -webkit-appearance: none;
+}
+
 .dot {
   width: 12px;
   height: 12px;
