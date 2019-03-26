@@ -243,8 +243,7 @@ items =
             "Write textbook and online content for an international education company"
             ],
         WorkItem "EF Education First" "International Teacher" "Shanghai, CN" "07-18-13" "02-04-16" [
-            "Teach English to Chinese kids",
-            "School Fire and Safety Coordinator (no one died on my watch)"
+            "Teach English to Chinese kids"
             ]
     ]
 
