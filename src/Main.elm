@@ -156,7 +156,7 @@ terminalHeader activeView =
     div [class "terminal-header "] [
         div [class "bg-grey-light w-full flex flex-row items-center justify-start p-1"] [
             p [class "w-1/3 flex justify-start"] [text "JSK resume 0.0.1"],
-            p [class "w-2/3 flex justify-start"] [text (headerText activeView)]
+            p [class "w-2/3 flex justify-start"] [text ("File: " ++ (headerText activeView))]
         ]
     ]
 
@@ -202,7 +202,7 @@ summary =
         sectionTitle "Summary",
         p [] [text "Jared Kobos"],
         p [] [text "JavaScript Developer at Linode"],
-        p [] [text "Works with React, Redux, Jest, Typescript, and Hugo. Also a fan of Elm, Go, and Python."]
+        p [] [text "Build things with React, Redux, Jest, Typescript, and Hugo. Also a fan of Elm, Go, and Python."]
     ]
 
 education =
@@ -231,7 +231,7 @@ type alias WorkItem =
 items = 
     [
         WorkItem "Linode" "JavaScript Developer" "Philadelphia, PA" "05-01-18" "" [
-            "Design and implement features for front end applications",
+            "Build and maintain features for front end applications",
             "Coordinate releases",
             "Research and present patterns to improve the codebase"
             ],
