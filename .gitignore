@@ -1,5 +1,6 @@
 # Distribution
-build/
+# build/ 
+# Using GH Pages, so this needs to be included
 
 # elm-package generated files
 elm-stuff
