@@ -57,3 +57,12 @@ input[type=text] {
 .body-text {
   line-height: 2.5;
 }
+
+.link-item {
+  color: #f1f5f8;
+  text-decoration: none;
+}
+
+.link-item:hover {
+  text-decoration: underline;
+}

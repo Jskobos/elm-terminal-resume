@@ -3,8 +3,8 @@ module Main exposing (..)
 import Browser
 import Browser.Dom as Dom
 import Browser.Events exposing (onKeyDown)
-import Html exposing (Html, a, text, div, h1, img, input, p, pre, span)
-import Html.Attributes exposing (class, classList, href, id, src, style, tabindex, value)
+import Html exposing (Html, a, text, div, h1, img, input, p, pre, span, textarea)
+import Html.Attributes exposing (autofocus, class, classList, cols, href, id, placeholder, rows, src, style, tabindex, value)
 import Html.Events exposing (on, onInput)
 import Json.Decode as Json
 import Keyboard.Event exposing (KeyboardEvent, decodeKeyboardEvent)
@@ -15,7 +15,7 @@ type alias Flags = {}
 ---- MODEL ----
 
 type ActiveView =
-    Welcome | Summary | Experience | Education | Contact | Links | Feedback | Language | Theme
+    Welcome | Summary | Experience | Education | Links | Feedback | Language | Theme
 
 type alias Model =
     {
@@ -71,8 +71,6 @@ getActiveView ctrl event =
                         Just Summary
                     "w" ->
                         Just Experience
-                    "c" ->
-                        Just Contact
                     "e" ->
                         Just Education
                     "f" ->
@@ -126,7 +124,7 @@ dot color =
         ] ] []
 
 body model =
-    div [class "terminal bg-black"] [terminalHeader model.activeView, div [class "terminal-content"] [terminalContent model], terminalFooter]
+    div [class "terminal bg-black"] [terminalHeader model.activeView, div [class "terminal-content"] [terminalContent model], terminalFooter model.activeView]
 
 terminalContent model =
     case model.activeView of
@@ -140,23 +138,29 @@ terminalContent model =
             experience
         Links ->
             links
+        Feedback ->
+            feedback model
         _ -> 
             text "Section coming soon"
   
 
-terminalFooter =
-    div [class "terminal-footer"] [
-        div [class "flex flex-row flex-wrap"] [
-            footerItem "^S" "Summary",
-            footerItem "^W" "Work Experience",
-            footerItem "^E" "Education",
-            footerItem "^C" "Contact Info",
-            footerItem "^L" "Links",
-            footerItem "^F" "Leave feedback",
-            footerItem "^Z" "Change Language",
-            footerItem "^T" "Change Theme"
-        ]
-    ]
+
+terminalFooter : ActiveView -> Html Msg
+terminalFooter terminalView =
+    case terminalView of
+        Feedback ->
+            div [class "terminal-footer"] []
+        _ ->
+            div [class "terminal-footer"] [
+                div [class "flex flex-row flex-wrap"] [
+                    footerItem "^S" "Summary",
+                    footerItem "^W" "Work Experience",
+                    footerItem "^E" "Education",
+                    footerItem "^L" "Links",
+                    footerItem "^F" "Leave feedback",
+                    footerItem "^Z" "Change Language",
+                    footerItem "^T" "Change Theme"
+                ]]
 
 terminalHeader activeView =
     div [class "terminal-header "] [
@@ -175,8 +179,6 @@ headerText currentView =
             "education.txt"
         Experience ->
             "work_experience.txt"
-        Contact ->
-            "contact_info.txt"
         Feedback ->
             "feedback_form.txt"
         Theme ->
@@ -278,16 +280,23 @@ renderDescription desc =
     p [] [text (" - " ++ desc)]
 
 links =
-    div [class "flex flex-column justify-start"] [
-        renderLinkItem "https://github.com/jskobos" "Github Profile"
+    div [class "text-left ml-2 body-text"] [
+        sectionTitle "Links",
+        renderLinkItem "https://github.com/jskobos" "GitHub Profile",
+        renderLinkItem "https://gitbhub.com/jskobos/old-resume" "Previous GitHub portfolio (Vanilla Javascript MVC)"
     ]
 
 renderLinkItem url description =
-    a [href url] [text description]
+    p [class "mt-6 ml-4"] [a [href url, class "link-item"] [text description]]
 
 welcome model =
     div [class "flex flex-column justify-start w-full"] [
-        input [value model.inputText, onInput TextInput, class "bg-black text-white text-left" ] []
+        text ""
+    ]
+
+feedback model =
+    div [class "flex flex-column justify-start w-full h-full"] [
+        textarea [autofocus True, cols 40, rows 20, placeholder "Leave some feedback..." ,value model.inputText, onInput TextInput, class "bg-black text-white text-left w-full" ] []
     ]
 
 ---- SUBSCRIPTIONS ----
