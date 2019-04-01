@@ -166,7 +166,7 @@ terminalHeader activeView =
     div [class "terminal-header "] [
         div [class "bg-grey-light w-full flex flex-row items-center justify-start p-1"] [
             p [class "w-1/3 flex justify-start"] [text "JSK resume 0.0.1"],
-            p [class "w-2/3 flex justify-start"] [text ("File: " ++ (headerText activeView))]
+            p [class "w-2/3 flex justify-start"] [text (if activeView /= Welcome then "File: " ++ (headerText activeView) else headerText activeView)]
         ]
     ]
 
@@ -189,6 +189,7 @@ headerText currentView =
             "New Buffer"
         Links ->
             "links.txt"
+
 
 footerItem : String -> String -> Html Msg
 footerItem key description =
