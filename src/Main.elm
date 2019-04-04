@@ -20,6 +20,7 @@ type ActiveView =
 type alias Model =
     {
         activeView: ActiveView,
+        activeTheme: ThemeOption,
         inputText: String
     }
 
@@ -28,6 +29,7 @@ init : Flags -> ( Model, Cmd Msg )
 init _ =
     ( {
         activeView = Welcome,
+        activeTheme = Classic,
         inputText = ""
     }, Dom.focus "outermost" |> Task.attempt (always NoOp) )
 
@@ -35,8 +37,15 @@ init _ =
 
 ---- UPDATE ----
 
+type KeyAction =
+    ChangeTheme
+    | ChangeView
+
 type Msg
-    = HandleKeyboardEvent KeyboardEvent
+    = HandleKeyboardEvent KeyAction KeyboardEvent
+    | HandleViewChange KeyboardEvent
+    | HandleThemeInput KeyboardEvent
+    | ThemeChange ThemeOption
     | TextInput String
     | NoOp
 
@@ -44,7 +53,14 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        HandleKeyboardEvent event ->
+        HandleKeyboardEvent action event ->
+            case action of
+                ChangeTheme ->
+                    update (HandleThemeInput event) model
+                ChangeView ->
+                    update (HandleViewChange event) model
+
+        HandleViewChange event ->
             let
                 newView = getActiveView event.ctrlKey event.key
             in
@@ -57,6 +73,17 @@ update msg model =
                     ( model, Cmd.none )
         TextInput input ->
             ( { model | inputText = input }, Cmd.none )
+        ThemeChange newTheme ->
+            ( { model | activeTheme = newTheme }, Cmd.none )
+        HandleThemeInput event ->
+            let
+                newTheme = getNewTheme event.key
+            in
+            case newTheme of
+                Just t ->
+                    ( { model | activeTheme = t }, Cmd.none)
+                Nothing ->
+                    ( model, Cmd.none )
         NoOp ->
             ( model, Cmd.none )
 
@@ -86,22 +113,27 @@ getActiveView ctrl event =
             Nothing ->
                 Nothing
 
+getNewTheme : Maybe String -> Maybe ThemeOption
+getNewTheme event =
+    case event of
+        Just key ->
+            case key of
+                "1" ->
+                    Just Classic
+                "2" ->
+                    Just Green
+                _ ->
+                    Nothing
+        Nothing ->
+            Nothing
+
 
 ---- VIEW ----
 
 
 view : Model -> Html Msg
 view model =
-    div [ on "keydown" <|
-            Json.map HandleKeyboardEvent decodeKeyboardEvent
-        , tabindex 0
-        , id "outermost"
-        , style "position" "absolute"
-        , style "height" "100%"
-        , style "width" "100%"
-        , style "overflow" "hidden"
-        , style "outline" "none"
-        ]
+    div []
         [
             div [class "h-screen w-screen"]
                 [ topBar, body model
@@ -140,6 +172,8 @@ terminalContent model =
             links
         Feedback ->
             feedback model
+        Theme ->
+            theme model.activeTheme
         _ -> 
             text "Section coming soon"
   
@@ -208,7 +242,6 @@ sectionTitle title =
 
 summary =
     div [class "text-left ml-2 body-text"] [
-        sectionTitle "Summary",
         p [] [text "Jared Kobos"],
         p [] [text "JavaScript Developer at Linode"],
         p [] [text "Build things with React, Redux, Jest, Typescript, and Hugo. Also a fan of Elm, Go, and Python."]
@@ -300,11 +333,44 @@ feedback model =
         textarea [autofocus True, cols 40, rows 20, placeholder "Leave some feedback..." ,value model.inputText, onInput TextInput, class "bg-black text-white text-left w-full" ] []
     ]
 
+type ThemeOption = Classic | Green
+
+theme : ThemeOption -> Html Msg
+theme activeTheme =
+    div [] [
+        renderOptions activeTheme
+    ]
+
+renderOptions activeTheme =
+    div [] [
+        div [] [
+                div [] [text "1: "],
+                div [] [text "Classic"]
+            ],
+
+        div [] [
+            div [] [text "2: "],
+            div [] [text "Green"]
+        ]
+    ]
+    
+
+
 ---- SUBSCRIPTIONS ----
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    onKeyDown (Json.map HandleKeyboardEvent decodeKeyboardEvent)
+    let
+        mode = getMode model.activeView
+    in 
+    onKeyDown (Json.map (HandleKeyboardEvent mode) decodeKeyboardEvent)
+
+getMode v =
+    case v of
+        Theme ->
+            ChangeTheme
+        _ ->
+            ChangeView
 
 ---- PROGRAM ----
 
