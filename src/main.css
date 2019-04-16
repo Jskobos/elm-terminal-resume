@@ -66,3 +66,11 @@ input[type=text] {
 .link-item:hover {
   text-decoration: underline;
 }
+
+.green-background {
+  background-color: #41FF00;
+}
+
+.green-theme-text {
+  color: #41FF00;
+}

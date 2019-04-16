@@ -158,55 +158,77 @@ dot color =
         ] ] []
 
 body model =
-    div [class "terminal bg-black"] [terminalHeader model.activeView, div [class "terminal-content"] [terminalContent model], terminalFooter model.activeView]
+    div [class "terminal bg-black"] [terminalHeader model.activeView model.activeTheme, div [class "terminal-content"] [terminalContent model], terminalFooter model.activeView model.activeTheme]
 
 terminalContent model =
-    case model.activeView of
-        Welcome -> 
-            welcome model
-        Summary ->
-            summary
-        Education ->
-            education
-        Experience ->
-            experience
-        Links ->
-            links
-        Feedback ->
-            feedback model
-        Theme ->
-            theme model.activeTheme
-        _ -> 
-            text "Section coming soon"
+    let
+        themeClasses = case model.activeTheme of
+            Classic ->
+                " text-white"
+            Green ->
+                " green-theme-text"
+    in
+    
+    div [class themeClasses] [
+        case model.activeView of
+                Welcome -> 
+                    welcome model
+                Summary ->
+                    summary
+                Education ->
+                    education
+                Experience ->
+                    experience
+                Links ->
+                    links
+                Feedback ->
+                    feedback model
+                Theme ->
+                    theme model.activeTheme
+                _ -> 
+                    text "Section coming soon"
+    ]
+    
   
 
 
-terminalFooter : ActiveView -> Html Msg
-terminalFooter terminalView =
+terminalFooter : ActiveView -> ThemeOption -> Html Msg
+terminalFooter terminalView currentTheme =
+    let
+        footer = footerItem currentTheme
+    in
+    
     case terminalView of
         Feedback ->
             div [class "terminal-footer"] []
         _ ->
             div [class "terminal-footer"] [
                 div [class "flex flex-row flex-wrap"] [
-                    footerItem "^S" "Summary",
-                    footerItem "^W" "Work Experience",
-                    footerItem "^E" "Education",
-                    footerItem "^L" "Links",
-                    footerItem "^F" "Leave feedback",
-                    footerItem "^Z" "Change Language",
-                    footerItem "^T" "Change Theme"
+                    footer "^S" "Summary",
+                    footer "^W" "Work Experience",
+                    footer "^E" "Education",
+                    footer "^L" "Links",
+                    footer "^F" "Leave feedback",
+                    footer "^Z" "Change Language",
+                    footer "^T" "Change Theme"
                 ]]
 
-terminalHeader activeView =
-    div [class "terminal-header "] [
-        div [class "bg-grey-light w-full flex flex-row items-center justify-start p-1"] [
+terminalHeader activeView activeTheme =
+    let
+        themeClasses = case activeTheme of
+            Classic ->
+                " bg-grey-light"
+            Green ->
+                " green-background"
+    in
+    div [class ("terminal-header")] [
+        div [class ("w-full flex flex-row items-center justify-start p-1" ++ themeClasses)] [
             p [class "w-1/3 flex justify-start"] [text "JSK resume 0.0.1"],
             p [class "w-2/3 flex justify-start"] [text (if activeView /= Welcome then "File: " ++ (headerText activeView) else headerText activeView)]
         ]
     ]
 
-headerText : ActiveView -> String
+headerText : ActiveView  -> String
 headerText currentView =
     case currentView of
         Summary ->
@@ -227,11 +249,24 @@ headerText currentView =
             "links.txt"
 
 
-footerItem : String -> String -> Html Msg
-footerItem key description =
-    div [class "flex flex-row text-white p-1 w-1/6"] [
-        p [class "m-2 bg-grey-light text-black"] [text key],
-        p [class "m-2"] [text description]
+footerItem : ThemeOption -> String -> String -> Html Msg
+footerItem currentTheme key description =
+    let
+        keyClasses = case currentTheme of
+            Classic ->
+                "m-2 bg-grey-light text-black"
+            Green ->
+                "m-2 green-background text-black"
+        descClasses = case currentTheme of
+            Classic ->
+                "m-2 text-white"
+            Green ->
+                "m-2 green-theme-text"
+    in
+    
+    div [class "flex flex-row p-1 w-1/6"] [
+        p [class keyClasses] [text key],
+        p [class descClasses] [text description]
     ]
 
 
