@@ -181,8 +181,6 @@ terminalContent model =
                     experience
                 Links ->
                     links
-                Feedback ->
-                    feedback model
                 Theme ->
                     theme model.activeTheme
                 _ -> 
@@ -196,22 +194,17 @@ terminalFooter : ActiveView -> ThemeOption -> Html Msg
 terminalFooter terminalView currentTheme =
     let
         footer = footerItem currentTheme
-    in
-    
-    case terminalView of
-        Feedback ->
-            div [class "terminal-footer"] []
-        _ ->
-            div [class "terminal-footer"] [
-                div [class "flex flex-row flex-wrap"] [
-                    footer "^S" "Summary",
-                    footer "^W" "Work Experience",
-                    footer "^E" "Education",
-                    footer "^L" "Links",
-                    footer "^F" "Leave feedback",
-                    footer "^Z" "Change Language",
-                    footer "^T" "Change Theme"
-                ]]
+    in    
+    div [class "terminal-footer"] [
+        div [class "flex flex-row flex-wrap"] [
+            footer "^S" "Summary",
+            footer "^W" "Work Experience",
+            footer "^E" "Education",
+            footer "^L" "Links",
+            footer "^F" "Leave feedback",
+            footer "^Z" "Change Language",
+            footer "^T" "Change Theme"
+        ]]
 
 terminalHeader activeView activeTheme =
     let
