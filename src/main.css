@@ -59,7 +59,7 @@ input[type=text] {
 }
 
 .link-item {
-  color: #f1f5f8;
+  color: inherit;
   text-decoration: none;
 }
 
