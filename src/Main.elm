@@ -77,13 +77,13 @@ update msg model =
             ( { model | activeTheme = newTheme }, Cmd.none )
         HandleThemeInput event ->
             let
-                newTheme = getNewTheme event.key
+                newTheme = getNewTheme event.ctrlKey event.key
             in
             case newTheme of
                 Just t ->
                     ( { model | activeTheme = t }, Cmd.none)
                 Nothing ->
-                    ( model, Cmd.none )
+                    update (HandleViewChange event) model
         NoOp ->
             ( model, Cmd.none )
 
@@ -113,19 +113,21 @@ getActiveView ctrl event =
             Nothing ->
                 Nothing
 
-getNewTheme : Maybe String -> Maybe ThemeOption
-getNewTheme event =
-    case event of
-        Just key ->
-            case key of
-                "1" ->
-                    Just Classic
-                "2" ->
-                    Just Green
-                _ ->
-                    Nothing
-        Nothing ->
-            Nothing
+getNewTheme : Bool -> Maybe String -> Maybe ThemeOption
+getNewTheme ctrl event =
+    if (ctrl) then Nothing
+    else
+        case event of
+            Just key ->
+                case key of
+                    "1" ->
+                        Just Classic
+                    "2" ->
+                        Just Green
+                    _ ->
+                        Nothing
+            Nothing ->
+                Nothing
 
 
 ---- VIEW ----
