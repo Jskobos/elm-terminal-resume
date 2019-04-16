@@ -374,20 +374,21 @@ type ThemeOption = Classic | Green
 
 theme : ThemeOption -> Html Msg
 theme activeTheme =
-    div [] [
-        renderOptions activeTheme
+    div [class "text-left ml-2 body-text"] [
+        sectionTitle "Choose a Theme"
+        , renderOptions activeTheme
     ]
 
 renderOptions activeTheme =
-    div [] [
-        div [] [
-                div [] [text "1: "],
-                div [] [text "Classic"]
+    div [class "m-2"] [
+        div [class "p-2 flex flex-row justify-start"] [
+                div [class "mr-2"] [text "1: "],
+                div [] [text "Normal"]
             ],
 
-        div [] [
-            div [] [text "2: "],
-            div [] [text "Green"]
+        div [class "p-2 flex flex-row justify-start"] [
+            div [class "mr-2"] [text "2: "],
+            div [] [text "Old-School Green"]
         ]
     ]
     
