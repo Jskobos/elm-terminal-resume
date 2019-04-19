@@ -3,12 +3,14 @@ module Main exposing (..)
 import Browser
 import Browser.Dom as Dom
 import Browser.Events exposing (onKeyDown)
+import Browser.Navigation as Nav
 import Html exposing (Html, a, text, div, h1, img, input, p, pre, span, textarea)
 import Html.Attributes exposing (autofocus, class, classList, cols, href, id, placeholder, rows, src, style, tabindex, value)
 import Html.Events exposing (on, onInput)
 import Json.Decode as Json
 import Keyboard.Event exposing (KeyboardEvent, decodeKeyboardEvent)
 import Task
+import Url
 
 type alias Flags = {}
 
@@ -21,19 +23,20 @@ type alias Model =
     {
         activeView: ActiveView,
         activeTheme: ThemeOption,
-        inputText: String
+        inputText: String,
+        key: Nav.Key,
+        url: Url.Url
     }
 
-
-init : Flags -> ( Model, Cmd Msg )
-init _ =
-    ( {
-        activeView = Welcome,
-        activeTheme = Classic,
-        inputText = ""
-    }, Dom.focus "outermost" |> Task.attempt (always NoOp) )
-
-
+init : (flags) -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init flags url key =
+  ({
+      key=key,
+      url=url,
+      activeView = Welcome,
+      activeTheme = Classic,
+      inputText = ""
+   }, Dom.focus "outermost" |> Task.attempt (always NoOp) )
 
 ---- UPDATE ----
 
@@ -48,6 +51,8 @@ type Msg
     | ThemeChange ThemeOption
     | TextInput String
     | NoOp
+    | LinkClicked Browser.UrlRequest
+    | UrlChanged Url.Url
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -84,6 +89,17 @@ update msg model =
                     ( { model | activeTheme = t }, Cmd.none)
                 Nothing ->
                     update (HandleViewChange event) model
+        LinkClicked urlRequest ->
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model, Nav.pushUrl model.key (Url.toString url) )
+
+                Browser.External href ->
+                    ( model, Nav.load href )
+        UrlChanged url -> 
+            ( { model | url = url }
+            , Cmd.none
+            )
         NoOp ->
             ( model, Cmd.none )
 
@@ -133,14 +149,18 @@ getNewTheme ctrl event =
 ---- VIEW ----
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
-    div []
+    {
+        title = "Jared",
+        body = [div []
         [
             div [class "h-screen w-screen"]
                 [ topBar, body model
                 ]
-        ]
+        ]]
+    }
+    
 
 topBar =
     div [class "flex flex-row items-center justify-start topbar bg-grey-darkest"] [
@@ -408,9 +428,11 @@ getMode v =
 
 main : Program Flags Model Msg
 main =
-    Browser.element
+    Browser.application
         { view = view
         , init = init
         , update = update
         , subscriptions = subscriptions
+        , onUrlChange = UrlChanged
+        , onUrlRequest = LinkClicked
         }
