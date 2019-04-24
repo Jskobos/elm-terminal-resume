@@ -11,6 +11,7 @@ import Json.Decode as Json
 import Keyboard.Event exposing (KeyboardEvent, decodeKeyboardEvent)
 import Task
 import Url
+import Url.Builder exposing (absolute)
 
 type alias Flags = {}
 
@@ -21,7 +22,6 @@ type ActiveView =
 
 type alias Model =
     {
-        activeView: ActiveView,
         activeTheme: ThemeOption,
         inputText: String,
         key: Nav.Key,
@@ -33,7 +33,6 @@ init flags url key =
   ({
       key=key,
       url=url,
-      activeView = Welcome,
       activeTheme = Classic,
       inputText = ""
    }, Dom.focus "outermost" |> Task.attempt (always NoOp) )
@@ -67,13 +66,11 @@ update msg model =
 
         HandleViewChange event ->
             let
-                newView = getActiveView event.ctrlKey event.key
+                newView = getUrlFromKey event.ctrlKey event.key
             in
             case newView of
                 Just v ->
-                    ( { model | activeView = v }
-                    , Cmd.none
-                    )
+                    ( model, Nav.pushUrl model.key v )
                 Nothing ->
                     ( model, Cmd.none )
         TextInput input ->
@@ -103,27 +100,27 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
-getActiveView : Bool -> Maybe String -> Maybe ActiveView
-getActiveView ctrl event =
+getUrlFromKey : Bool -> Maybe String -> Maybe String
+getUrlFromKey ctrl event =
     if (not ctrl) then Nothing
     else
         case event of
             Just key ->
                 case key of
                     "s" ->
-                        Just Summary
+                        Just "/summary"
                     "w" ->
-                        Just Experience
+                        Just "/work"
                     "e" ->
-                        Just Education
+                        Just "/education"
                     "f" ->
-                        Just Feedback
+                        Just "/feedback"
                     "z" ->
-                        Just Language
+                        Just "/language"
                     "t" ->
-                        Just Theme
+                        Just "/theme"
                     "l" ->
-                        Just Links
+                        Just "/links"
                     _ ->
                         Nothing
             Nothing ->
@@ -178,7 +175,7 @@ dot color =
         ] ] []
 
 body model =
-    div [class "terminal bg-black"] [terminalHeader model.activeView model.activeTheme, div [class "terminal-content"] [terminalContent model], terminalFooter model.activeView model.activeTheme]
+    div [class "terminal bg-black"] [terminalHeader model.url.path model.activeTheme, div [class "terminal-content"] [terminalContent model], terminalFooter model.url.path model.activeTheme]
 
 terminalContent model =
     let
@@ -190,18 +187,18 @@ terminalContent model =
     in
     
     div [class themeClasses] [
-        case model.activeView of
-                Welcome -> 
+        case model.url.path of
+                "/welcome" -> 
                     welcome model
-                Summary ->
+                "/summary" ->
                     summary
-                Education ->
+                "/education" ->
                     education
-                Experience ->
+                "/work" ->
                     experience
-                Links ->
+                "/link" ->
                     links
-                Theme ->
+                "/theme" ->
                     theme model.activeTheme
                 _ -> 
                     text "Section coming soon"
@@ -210,7 +207,7 @@ terminalContent model =
   
 
 
-terminalFooter : ActiveView -> ThemeOption -> Html Msg
+terminalFooter : String -> ThemeOption -> Html Msg
 terminalFooter terminalView currentTheme =
     let
         footer = footerItem currentTheme
@@ -226,7 +223,7 @@ terminalFooter terminalView currentTheme =
             footer "^T" "Change Theme"
         ]]
 
-terminalHeader activeView activeTheme =
+terminalHeader url activeTheme =
     let
         themeClasses = case activeTheme of
             Classic ->
@@ -237,29 +234,31 @@ terminalHeader activeView activeTheme =
     div [class ("terminal-header")] [
         div [class ("w-full flex flex-row items-center justify-start p-1" ++ themeClasses)] [
             p [class "w-1/3 flex justify-start"] [text "JSK resume 0.0.1"],
-            p [class "w-2/3 flex justify-start"] [text (if activeView /= Welcome then "File: " ++ (headerText activeView) else headerText activeView)]
+            p [class "w-2/3 flex justify-start"] [text (if url /= "/welcome" then "File: " ++ (headerText url) else headerText url)]
         ]
     ]
 
-headerText : ActiveView  -> String
+headerText : String  -> String
 headerText currentView =
     case currentView of
-        Summary ->
+        "/summary" ->
             "summary.txt"
-        Education ->
+        "/education" ->
             "education.txt"
-        Experience ->
+        "/work" ->
             "work_experience.txt"
-        Feedback ->
+        "/feedback" ->
             "feedback_form.txt"
-        Theme ->
+        "/theme" ->
             "theme.txt"
-        Language ->
+        "/language" ->
             "language_select.txt"
-        Welcome ->
+        "/" ->
             "New Buffer"
-        Links ->
+        "/links" ->
             "links.txt"
+        _ ->
+            "unknown.txt"
 
 
 footerItem : ThemeOption -> String -> String -> Html Msg
@@ -412,13 +411,13 @@ renderOptions activeTheme =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     let
-        mode = getMode model.activeView
+        mode = getMode model.url.path
     in 
     onKeyDown (Json.map (HandleKeyboardEvent mode) decodeKeyboardEvent)
 
 getMode v =
     case v of
-        Theme ->
+        "/theme" ->
             ChangeTheme
         _ ->
             ChangeView
