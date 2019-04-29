@@ -188,7 +188,7 @@ terminalContent model =
     
     div [class themeClasses] [
         case model.url.path of
-                "/welcome" -> 
+                "/" -> 
                     welcome model
                 "/summary" ->
                     summary
@@ -234,7 +234,7 @@ terminalHeader url activeTheme =
     div [class ("terminal-header")] [
         div [class ("w-full flex flex-row items-center justify-start p-1" ++ themeClasses)] [
             p [class "w-1/3 flex justify-start"] [text "JSK resume 0.0.1"],
-            p [class "w-2/3 flex justify-start"] [text (if url /= "/welcome" then "File: " ++ (headerText url) else headerText url)]
+            p [class "w-2/3 flex justify-start"] [text (if url /= "/" then "File: " ++ (headerText url) else headerText url)]
         ]
     ]
 
