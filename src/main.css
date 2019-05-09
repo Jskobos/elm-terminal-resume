@@ -74,3 +74,8 @@ input[type=text] {
 .green-theme-text {
   color: #41FF00;
 }
+
+.footer-link {
+  text-decoration: none;
+  color: inherit;
+}

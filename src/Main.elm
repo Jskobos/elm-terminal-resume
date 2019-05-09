@@ -6,7 +6,7 @@ import Browser.Events exposing (onKeyDown)
 import Browser.Navigation as Nav
 import Html exposing (Html, a, text, div, h1, img, input, p, pre, span, textarea)
 import Html.Attributes exposing (autofocus, class, classList, cols, href, id, placeholder, rows, src, style, tabindex, value)
-import Html.Events exposing (on, onInput)
+import Html.Events exposing (on, onClick, onInput)
 import Json.Decode as Json
 import Keyboard.Event exposing (KeyboardEvent, decodeKeyboardEvent)
 import Task
@@ -52,7 +52,6 @@ type Msg
     | NoOp
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
-
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -214,13 +213,13 @@ terminalFooter terminalView currentTheme =
     in    
     div [class "terminal-footer"] [
         div [class "flex flex-row flex-wrap"] [
-            footer "^S" "Summary",
-            footer "^W" "Work Experience",
-            footer "^E" "Education",
-            footer "^L" "Links",
-            footer "^F" "Leave feedback",
-            footer "^Z" "Change Language",
-            footer "^T" "Change Theme"
+            footer "^S" "Summary" "/summary",
+            footer "^W" "Work Experience" "/experience",
+            footer "^E" "Education" "/education",
+            footer "^L" "Links" "/links",
+            footer "^F" "Leave feedback" "/feedback", 
+            footer "^Z" "Change Language" "/language",
+            footer "^T" "Change Theme" "/theme"
         ]]
 
 terminalHeader url activeTheme =
@@ -261,8 +260,8 @@ headerText currentView =
             "unknown.txt"
 
 
-footerItem : ThemeOption -> String -> String -> Html Msg
-footerItem currentTheme key description =
+footerItem : ThemeOption -> String -> String -> String -> Html Msg
+footerItem currentTheme key description path =
     let
         keyClasses = case currentTheme of
             Classic ->
@@ -276,7 +275,7 @@ footerItem currentTheme key description =
                 "m-2 green-theme-text"
     in
     
-    div [class "flex flex-row p-1 w-1/6"] [
+    a [class "flex flex-row p-1 w-1/6 footer-link", href path] [
         p [class keyClasses] [text key],
         p [class descClasses] [text description]
     ]
