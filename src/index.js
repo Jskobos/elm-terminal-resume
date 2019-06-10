@@ -2,8 +2,15 @@ import './main.css';
 import { Elm } from './Main.elm';
 import registerServiceWorker from './registerServiceWorker';
 
-Elm.Main.init({
-  node: document.getElementById('root')
+var settings = localStorage.getItem('settings');
+
+var app = Elm.Main.init({
+  node: document.getElementById('root'),
+  flags: JSON.parse(settings)
+});
+
+app.ports.storeSettings.subscribe(function(data) {
+  localStorage.setItem('settings', JSON.stringify(data));
 });
 
 registerServiceWorker();
