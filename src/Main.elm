@@ -203,7 +203,7 @@ getUrlFromKey ctrl event =
                         Just "/summary"
 
                     "w" ->
-                        Just "/work"
+                        Just "/experience"
 
                     "e" ->
                         Just "/education"
@@ -314,7 +314,7 @@ terminalContent model =
             "/education" ->
                 education
 
-            "/work" ->
+            "/experience" ->
                 experience
 
             "/link" ->
@@ -335,7 +335,7 @@ terminalFooter terminalView currentTheme =
             footerItem currentTheme
     in
     div [ class "terminal-footer" ]
-        [ div [ class "flex flex-row flex-wrap" ]
+        [ div [ class "flex flex-row flex-nowrap justify-between" ]
             [ footer "^S" "Summary" "/summary"
             , footer "^W" "Work Experience" "/experience"
             , footer "^E" "Education" "/education"
@@ -382,7 +382,7 @@ headerText currentView =
         "/education" ->
             "education.txt"
 
-        "/work" ->
+        "/experience" ->
             "work_experience.txt"
 
         "/feedback" ->
@@ -410,20 +410,20 @@ footerItem currentTheme key description path =
         keyClasses =
             case currentTheme of
                 Classic ->
-                    "m-2 bg-grey-light text-black"
+                    "m-1 bg-grey-light text-black"
 
                 Green ->
-                    "m-2 green-background text-black"
+                    "m-1 green-background text-black"
 
         descClasses =
             case currentTheme of
                 Classic ->
-                    "m-2 text-white"
+                    "m-1 text-white"
 
                 Green ->
-                    "m-2 green-theme-text"
+                    "m-1 green-theme-text"
     in
-    a [ class "flex flex-row p-1 w-1/6 footer-link", href path ]
+    a [ class "flex flex-row p-1 footer-link", href path ]
         [ p [ class keyClasses ] [ text key ]
         , p [ class descClasses ] [ text description ]
         ]
