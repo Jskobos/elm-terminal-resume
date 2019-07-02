@@ -52,7 +52,7 @@ input[type=text] {
 
 .terminal-content {
   color: #f1f5f8;
-  padding-bottom: 2em;
+  height: 80%;
   opacity: 0.8;
 }
 

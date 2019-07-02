@@ -290,7 +290,7 @@ dot color =
 
 
 body model =
-    div [ class "terminal bg-black" ] [ terminalHeader model.url.path model.activeTheme, div [ class "terminal-content" ] [ terminalContent model ], terminalFooter model.url.path model.activeTheme ]
+    div [ class "terminal bg-black h-full" ] [ terminalHeader model.url.path model.activeTheme, div [ class "terminal-content" ] [ terminalContent model ], terminalFooter model.url.path model.activeTheme ]
 
 
 terminalContent model =
@@ -298,10 +298,10 @@ terminalContent model =
         themeClasses =
             case model.activeTheme of
                 Classic ->
-                    " text-white"
+                    " text-white h-full"
 
                 Green ->
-                    " green-theme-text"
+                    " green-theme-text h-full"
     in
     div [ class themeClasses ]
         [ case model.url.path of
