@@ -359,7 +359,7 @@ terminalHeader url activeTheme =
     in
     div [ class "terminal-header" ]
         [ div [ class ("w-full flex flex-row items-center justify-start p-1" ++ themeClasses) ]
-            [ p [ class "w-1/3 flex justify-start" ] [ text "JSK resume 0.0.1" ]
+            [ p [ class "w-1/3 flex justify-start" ] [ text "JSK resume 0.1.0" ]
             , p [ class "w-2/3 flex justify-start" ]
                 [ text
                     (if url /= "/" then
@@ -477,8 +477,7 @@ items =
         "05-01-18"
         ""
         [ "Build and maintain features for front end applications"
-        , "Coordinate releases"
-        , "Research and present patterns to improve the codebase"
+        , "Research and implement patterns to improve the codebase"
         ]
     , WorkItem "Linode"
         "Technical Writer"
@@ -581,7 +580,7 @@ renderOptions activeTheme =
             ]
         , div [ class "p-2 flex flex-row justify-start" ]
             [ div [ class "mr-2" ] [ text "2: " ]
-            , div [] [ text "Old-School Green" ]
+            , div [] [ text "Green" ]
             ]
         ]
 
