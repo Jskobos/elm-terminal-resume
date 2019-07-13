@@ -11,7 +11,9 @@ pipeline {
         /* This builds the actual image; synonymous to
          * docker build on the command line */
         steps {
-          docker.build("kobonaut/elm-terminal-resume")
+          script {
+            docker.build("kobonaut/elm-terminal-resume")
+          }
         }
         
       }
