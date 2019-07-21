@@ -9,7 +9,7 @@ pipeline {
     stage('Build image') {
       steps {
         script {
-          docker.build("kobonaut/elm-terminal-resume")
+          def elmImage = docker.build("kobonaut/elm-terminal-resume")
         }
 
       }
