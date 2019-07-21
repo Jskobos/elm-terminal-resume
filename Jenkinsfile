@@ -9,6 +9,7 @@ pipeline {
     stage('Build image') {
       steps {
         script {
+          sh 'echo "Building image from Dockerfile"'
           def elmImage = docker.build("kobonaut/elm-terminal-resume")
         }
 
