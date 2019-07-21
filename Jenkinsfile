@@ -1,7 +1,7 @@
 pipeline {
   agent {
     docker {
-      image 'debian9'
+      image 'debian:9'
     }
 
   }
