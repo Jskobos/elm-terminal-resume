@@ -1,7 +1,8 @@
 pipeline {
   agent {
     docker {
-      image 'debian:9'
+      image docker 'maven:3-alpine'
+      label 'docker-agent'
     }
 
   }
