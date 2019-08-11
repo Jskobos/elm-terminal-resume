@@ -317,7 +317,7 @@ terminalContent model =
             "/experience" ->
                 experience
 
-            "/link" ->
+            "/links" ->
                 links
 
             "/theme" ->
@@ -538,8 +538,9 @@ renderDescription desc =
 links =
     div [ class "text-left ml-2 body-text" ]
         [ sectionTitle "Links"
+        , renderLinkItem "https://github.com/linode/manager" "Current open-source work project"
+        , renderLinkItem "https://github.com/jskobos/elm-terminal-resume" "This site's source code"
         , renderLinkItem "https://github.com/jskobos" "GitHub Profile"
-        , renderLinkItem "https://gitbhub.com/jskobos/old-resume" "Previous GitHub portfolio (Vanilla Javascript MVC)"
         ]
 
 
