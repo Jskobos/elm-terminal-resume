@@ -8,6 +8,13 @@
 [data-elm-hot="true"] {
   height: inherit;
 }
+textarea:focus, input:focus {
+  outline: none;
+}
+
+textarea {
+  height: 90vh !important;
+}
 
 body {
   font-family: 'Ubuntu Mono', monospace;

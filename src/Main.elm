@@ -7,6 +7,7 @@ import Browser.Navigation as Nav
 import Html exposing (Html, a, div, h1, img, input, p, pre, span, text, textarea)
 import Html.Attributes exposing (autofocus, class, classList, cols, href, id, placeholder, rows, src, style, tabindex, value)
 import Html.Events exposing (on, onClick, onInput)
+import Http
 import Json.Decode as JD
 import Json.Encode as JE
 import Keyboard.Event exposing (KeyboardEvent, decodeKeyboardEvent)
@@ -114,6 +115,7 @@ encodeSettings record =
 type KeyAction
     = ChangeTheme
     | ChangeView
+    | FeedbackSubmit
 
 
 type Msg
@@ -125,6 +127,8 @@ type Msg
     | NoOp
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
+    | HandleFeedback KeyboardEvent
+    | FeedbackPost ( Result Http.Error String )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -137,6 +141,9 @@ update msg model =
 
                 ChangeView ->
                     update (HandleViewChange event) model
+
+                FeedbackSubmit ->
+                    update (HandleFeedback event) model
 
         HandleViewChange event ->
             let
@@ -155,6 +162,19 @@ update msg model =
 
         ThemeChange newTheme ->
             ( { model | activeTheme = newTheme }, Cmd.none )
+
+        HandleFeedback event ->
+            let
+                action = getActionFromKey event.ctrlKey event.key
+            in
+            case action of
+                Submit ->
+                    ( model, submitFeedback model.inputText )
+                Exit ->
+                    ( model, Nav.pushUrl model.key "/summary")
+                Ignore ->
+                    ( model, Cmd.none)
+
 
         HandleThemeInput event ->
             let
@@ -186,9 +206,35 @@ update msg model =
             , Cmd.none
             )
 
+        FeedbackPost response ->
+            case response of
+                Ok r ->
+                    (model, Cmd.none)
+                Err error ->
+                    (model, Cmd.none)
+
         NoOp ->
             ( model, Cmd.none )
 
+type FeedbackAction = Submit | Exit | Ignore
+
+getActionFromKey : Bool -> Maybe String -> FeedbackAction
+getActionFromKey ctrl event =
+    if not ctrl then
+        Ignore
+    else
+        case event of 
+            Just key ->
+                case key of
+                    "o" ->
+                        Submit
+                    "x" ->
+                        Exit
+                    _ ->
+                        Ignore
+
+            Nothing ->
+                Ignore
 
 getUrlFromKey : Bool -> Maybe String -> Maybe String
 getUrlFromKey ctrl event =
@@ -249,6 +295,22 @@ getNewTheme ctrl event =
                 Nothing
 
 
+feedbackSuccessDecoder : JD.Decoder String
+feedbackSuccessDecoder = JD.field "output" JD.string
+
+feedbackErrorDecoder : JD.Decoder String
+feedbackErrorDecoder = JD.field "error" JD.string
+
+feedbackRequestEncoder : String -> JE.Value
+feedbackRequestEncoder str = JE.object [ ( "input", JE.string str ) ]
+
+submitFeedback : String -> Cmd Msg
+submitFeedback str =
+    Http.post {
+        url="http://localhost:4000",
+        body=( Http.jsonBody <| feedbackRequestEncoder str ),
+        expect= Http.expectJson FeedbackPost (feedbackSuccessDecoder)
+    }
 
 ---- VIEW ----
 
@@ -320,6 +382,9 @@ terminalContent model =
             "/links" ->
                 links
 
+            "/feedback" ->
+                feedback model
+
             "/theme" ->
                 theme model.activeTheme
 
@@ -333,18 +398,28 @@ terminalFooter terminalView currentTheme =
     let
         footer =
             footerItem currentTheme
+        footerLinks =
+            case terminalView of
+                    "/feedback" ->
+                        div [ class "flex flex-row flex-nowrap justify-start" ]
+                            [
+                                footer "^X" "Exit" "/summary"
+                            ,   footer "^O" "WriteOut (Submit Feedback)" "/summary"
+                            ]
+                        
+                    _ ->
+                        div [ class "flex flex-row flex-nowrap justify-between" ]
+                            [ footer "^S" "Summary" "/summary"
+                            , footer "^W" "Work Experience" "/experience"
+                            , footer "^E" "Education" "/education"
+                            , footer "^L" "Links" "/links"
+                            , footer "^F" "Leave feedback" "/feedback"
+                            , footer "^Z" "Change Language" "/language"
+                            , footer "^T" "Change Theme" "/theme"
+                            ]
+
     in
-    div [ class "terminal-footer" ]
-        [ div [ class "flex flex-row flex-nowrap justify-between" ]
-            [ footer "^S" "Summary" "/summary"
-            , footer "^W" "Work Experience" "/experience"
-            , footer "^E" "Education" "/education"
-            , footer "^L" "Links" "/links"
-            , footer "^F" "Leave feedback" "/feedback"
-            , footer "^Z" "Change Language" "/language"
-            , footer "^T" "Change Theme" "/theme"
-            ]
-        ]
+    div [ class "terminal-footer" ] [footerLinks]
 
 
 terminalHeader url activeTheme =
@@ -435,7 +510,7 @@ footerItem currentTheme key description path =
 
 sectionTitle : String -> Html Msg
 sectionTitle title =
-    p [ class "text-2xl" ] [ text title ]
+    p [ class "text-2xl w-48" ] [ text title ]
 
 
 summary =
@@ -555,8 +630,10 @@ welcome model =
 
 
 feedback model =
-    div [ class "flex flex-column justify-start w-full h-full" ]
-        [ textarea [ autofocus True, cols 40, rows 20, placeholder "Leave some feedback...", value model.inputText, onInput TextInput, class "bg-black text-white text-left w-full" ] []
+    div [ class "flex flex-col justify-start align-center ml-2 text-left body-text" ]
+        [ 
+          sectionTitle "Leave Feedback"
+        , textarea [ autofocus True, value model.inputText, onInput TextInput, class "bg-black text-white text-left w-full h-full" ] []
         ]
 
 
@@ -603,6 +680,9 @@ getMode v =
     case v of
         "/theme" ->
             ChangeTheme
+
+        "/feedback" ->
+            FeedbackSubmit
 
         _ ->
             ChangeView
