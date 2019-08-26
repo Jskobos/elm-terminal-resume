@@ -171,7 +171,7 @@ update msg model =
                 Submit ->
                     ( model, submitFeedback model.inputText )
                 Exit ->
-                    ( model, Nav.pushUrl model.key "/summary")
+                    ( { model | inputText = "" }, Nav.pushUrl model.key "/summary")
                 Ignore ->
                     ( model, Cmd.none)
 
