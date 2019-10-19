@@ -325,7 +325,7 @@ feedbackErrorDecoder : JD.Decoder String
 feedbackErrorDecoder = JD.field "error" JD.string
 
 feedbackRequestEncoder : String -> JE.Value
-feedbackRequestEncoder str = JE.object [ ( "input", JE.string str ) ]
+feedbackRequestEncoder str = JE.object [ ( "feedback", JE.string str ) ]
 
 submitFeedback : String -> String -> Cmd Msg
 submitFeedback url str =
@@ -540,7 +540,7 @@ summary =
     div [ class "text-left ml-2 body-text" ]
         [ p [] [ text "Jared Kobos" ]
         , p [] [ text "JavaScript Developer at Linode" ]
-        , p [] [ text "Build things with React, Redux, Jest, Typescript, and Hugo. Also a fan of Elm, Go, and Python." ]
+        , p [] [ text "Build things with React, Redux, Jest, Typescript, and Gatsby. Also a fan of Elm, Go, and Python." ]
         ]
 
 
