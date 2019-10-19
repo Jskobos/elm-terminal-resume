@@ -16,12 +16,19 @@ import Task
 import Url
 import Url.Builder exposing (absolute)
 
+type alias Settings = 
+    { theme : ThemeOption }
 
 type alias Flags =
-    { theme : ThemeOption
+    { settings : Settings
+    , apiUrl : String
     }
 
-
+type alias FlagValues = 
+    {
+        theme : ThemeOption
+        , apiUrl : String
+    }
 
 ---- MODEL ----
 
@@ -42,32 +49,44 @@ type alias Model =
     , inputText : String
     , key : Nav.Key
     , url : Url.Url
+    , apiUrl : String
     }
 
 
-getInitialValues : JD.Value -> ThemeOption
+getInitialValues : JD.Value -> FlagValues
 getInitialValues values =
     let
         result =
             JD.decodeValue decodeFlags values
     in
     case result of
-        Ok parsedTheme ->
-            parsedTheme
+        Ok parsedValues ->
+            {
+                theme = parsedValues.settings.theme,
+                apiUrl = parsedValues.apiUrl
+            }
 
         Err e ->
-            Classic
+            {
+                theme = Classic,
+                apiUrl = ""
+            }
 
-
-decodeFlags : JD.Decoder ThemeOption
+decodeFlags : JD.Decoder Flags
 decodeFlags =
-    JD.field "theme" themeDecoder
+    JD.map2 Flags
+        (JD.field "settings" settingsDecoder)
+        (JD.field "apiUrl" JD.string)
 
 
+settingsDecoder : JD.Decoder Settings
+settingsDecoder =
+    JD.map Settings (JD.field "theme" themeDecoder)
+        
 themeDecoder : JD.Decoder ThemeOption
 themeDecoder =
     JD.string
-        |> JD.andThen
+    |> JD.andThen
             (\str ->
                 case str of
                     "Classic" ->
@@ -80,13 +99,17 @@ themeDecoder =
                         JD.fail <| "Unknown theme: " ++ somethingElse
             )
 
-
 init : JD.Value -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
+    let
+        values = getInitialValues flags
+    in
+
     ( { key = key
       , url = url
-      , activeTheme = getInitialValues flags
+      , activeTheme = values.theme
       , inputText = ""
+      , apiUrl = values.apiUrl
       }
     , Dom.focus "outermost" |> Task.attempt (always NoOp)
     )
@@ -105,7 +128,7 @@ encodeThemeOption option =
             "Green"
 
 
-encodeSettings : Flags -> JE.Value
+encodeSettings : Settings -> JE.Value
 encodeSettings record =
     JE.object
         [ ( "theme", JE.string <| encodeThemeOption record.theme )
@@ -169,7 +192,7 @@ update msg model =
             in
             case action of
                 Submit ->
-                    ( model, submitFeedback model.inputText )
+                    ( model, submitFeedback model.apiUrl model.inputText )
                 Exit ->
                     ( { model | inputText = "" }, Nav.pushUrl model.key "/summary")
                 Ignore ->
@@ -304,10 +327,10 @@ feedbackErrorDecoder = JD.field "error" JD.string
 feedbackRequestEncoder : String -> JE.Value
 feedbackRequestEncoder str = JE.object [ ( "input", JE.string str ) ]
 
-submitFeedback : String -> Cmd Msg
-submitFeedback str =
+submitFeedback : String -> String -> Cmd Msg
+submitFeedback url str =
     Http.post {
-        url="http://localhost:4000",
+        url=url,
         body=( Http.jsonBody <| feedbackRequestEncoder str ),
         expect= Http.expectJson FeedbackPost (feedbackSuccessDecoder)
     }
