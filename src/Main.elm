@@ -50,6 +50,7 @@ type alias Model =
     , key : Nav.Key
     , url : Url.Url
     , apiUrl : String
+    , feedbackResult : String 
     }
 
 
@@ -110,6 +111,7 @@ init flags url key =
       , activeTheme = values.theme
       , inputText = ""
       , apiUrl = values.apiUrl
+      , feedbackResult = ""
       }
     , Dom.focus "outermost" |> Task.attempt (always NoOp)
     )
@@ -151,7 +153,7 @@ type Msg
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | HandleFeedback KeyboardEvent
-    | FeedbackPost ( Result Http.Error String )
+    | FeedbackPost ( Result Http.Error () )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -232,9 +234,9 @@ update msg model =
         FeedbackPost response ->
             case response of
                 Ok r ->
-                    (model, Cmd.none)
+                    ( { model | inputText = "", feedbackResult = "Feedback submitted successfully." }, Nav.pushUrl model.key "/summary")
                 Err error ->
-                    (model, Cmd.none)
+                    ( { model | feedbackResult = "An unexpected error occurred." } , Cmd.none)
 
         NoOp ->
             ( model, Cmd.none )
@@ -317,13 +319,6 @@ getNewTheme ctrl event =
             Nothing ->
                 Nothing
 
-
-feedbackSuccessDecoder : JD.Decoder String
-feedbackSuccessDecoder = JD.field "output" JD.string
-
-feedbackErrorDecoder : JD.Decoder String
-feedbackErrorDecoder = JD.field "error" JD.string
-
 feedbackRequestEncoder : String -> JE.Value
 feedbackRequestEncoder str = JE.object [ ( "feedback", JE.string str ) ]
 
@@ -332,7 +327,7 @@ submitFeedback url str =
     Http.post {
         url=url,
         body=( Http.jsonBody <| feedbackRequestEncoder str ),
-        expect= Http.expectJson FeedbackPost (feedbackSuccessDecoder)
+        expect= Http.expectWhatever FeedbackPost 
     }
 
 ---- VIEW ----
@@ -375,7 +370,7 @@ dot color =
 
 
 body model =
-    div [ class "terminal bg-black h-full" ] [ terminalHeader model.url.path model.activeTheme, div [ class "terminal-content" ] [ terminalContent model ], terminalFooter model.url.path model.activeTheme ]
+    div [ class "terminal bg-black h-full" ] [ terminalHeader model.url.path model.activeTheme, div [ class "terminal-content" ] [ terminalContent model ], terminalFooter model.url.path model.activeTheme model.feedbackResult ]
 
 
 terminalContent model =
@@ -416,8 +411,8 @@ terminalContent model =
         ]
 
 
-terminalFooter : String -> ThemeOption -> Html Msg
-terminalFooter terminalView currentTheme =
+terminalFooter : String -> ThemeOption -> String ->  Html Msg
+terminalFooter terminalView currentTheme feedbackResult =
     let
         footer =
             footerItem currentTheme
@@ -442,7 +437,10 @@ terminalFooter terminalView currentTheme =
                             ]
 
     in
-    div [ class "terminal-footer" ] [footerLinks]
+    div [ class "terminal-footer" ] [
+        if feedbackResult /= "" then span [class ("bg-grey-light text-black w-auto p-1")] [text ("[ " ++ feedbackResult ++ " ]")] else div [] []
+        , footerLinks
+        ]
 
 
 terminalHeader url activeTheme =
@@ -457,7 +455,7 @@ terminalHeader url activeTheme =
     in
     div [ class "terminal-header" ]
         [ div [ class ("w-full flex flex-row items-center justify-start p-1" ++ themeClasses) ]
-            [ p [ class "w-1/3 flex justify-start" ] [ text "JSK resume 0.1.0" ]
+            [ p [ class "w-1/3 flex justify-start" ] [ text "JSK resume 1.0.0" ]
             , p [ class "w-2/3 flex justify-start" ]
                 [ text
                     (if url /= "/" then
