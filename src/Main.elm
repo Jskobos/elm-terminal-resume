@@ -160,15 +160,20 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         HandleKeyboardEvent action event ->
+            let
+                -- No matter what, we clear any feedback state on any keyboard input
+                newModel = { model | feedbackResult = "" }
+            in
+        
             case action of
                 ChangeTheme ->
-                    update (HandleThemeInput event) model
+                    update (HandleThemeInput event) newModel
 
                 ChangeView ->
-                    update (HandleViewChange event) model
+                    update (HandleViewChange event) newModel
 
                 FeedbackSubmit ->
-                    update (HandleFeedback event) model
+                    update (HandleFeedback event) newModel
 
         HandleViewChange event ->
             let
