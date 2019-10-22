@@ -154,6 +154,8 @@ type Msg
     | UrlChanged Url.Url
     | HandleFeedback KeyboardEvent
     | FeedbackPost ( Result Http.Error () )
+    | SubmitFeedback 
+    | ExitFeedback
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -242,6 +244,12 @@ update msg model =
                     ( { model | inputText = "", feedbackResult = "Feedback submitted successfully." }, Nav.pushUrl model.key "/summary")
                 Err error ->
                     ( { model | feedbackResult = "An unexpected error occurred." } , Cmd.none)
+
+        SubmitFeedback ->
+            ( model, submitFeedback model.apiUrl model.inputText )
+
+        ExitFeedback ->
+            ( { model | inputText = "" }, Nav.pushUrl model.key "/summary")
 
         NoOp ->
             ( model, Cmd.none )
@@ -426,19 +434,19 @@ terminalFooter terminalView currentTheme feedbackResult =
                     "/feedback" ->
                         div [ class "flex flex-row flex-nowrap justify-start" ]
                             [
-                                footer "^X" "Exit" "/summary"
-                            ,   footer "^O" "WriteOut (Submit Feedback)" "/summary"
+                                footer "^X" "Exit" "/summary" ExitFeedback
+                            ,   footer "^O" "WriteOut (Submit Feedback)" "/summary" SubmitFeedback
                             ]
                         
                     _ ->
                         div [ class "flex flex-row flex-nowrap justify-between" ]
-                            [ footer "^S" "Summary" "/summary"
-                            , footer "^W" "Work Experience" "/experience"
-                            , footer "^E" "Education" "/education"
-                            , footer "^L" "Links" "/links"
-                            , footer "^F" "Leave feedback" "/feedback"
-                            , footer "^Z" "Change Language" "/language"
-                            , footer "^T" "Change Theme" "/theme"
+                            [ footer "^S" "Summary" "/summary" NoOp
+                            , footer "^W" "Work Experience" "/experience" NoOp
+                            , footer "^E" "Education" "/education" NoOp
+                            , footer "^L" "Links" "/links" NoOp
+                            , footer "^F" "Leave feedback" "/feedback" NoOp
+                            , footer "^Z" "Change Language" "/language" NoOp
+                            , footer "^T" "Change Theme" "/theme" NoOp
                             ]
 
     in
@@ -505,8 +513,8 @@ headerText currentView =
             "unknown.txt"
 
 
-footerItem : ThemeOption -> String -> String -> String -> Html Msg
-footerItem currentTheme key description path =
+footerItem : ThemeOption -> String -> String -> String -> Msg -> Html Msg
+footerItem currentTheme key description path action =
     let
         keyClasses =
             case currentTheme of
@@ -524,7 +532,7 @@ footerItem currentTheme key description path =
                 Green ->
                     "m-1 green-theme-text"
     in
-    a [ class "flex flex-row p-1 footer-link", href path ]
+    a [ class "flex flex-row p-1 footer-link", href path, onClick action ]
         [ p [ class keyClasses ] [ text key ]
         , p [ class descClasses ] [ text description ]
         ]
