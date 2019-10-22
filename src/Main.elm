@@ -15,6 +15,7 @@ import Ports
 import Task
 import Url
 import Url.Builder exposing (absolute)
+import Debug exposing (log)
 
 type alias Settings = 
     { theme : ThemeOption }
@@ -67,10 +68,10 @@ getInitialValues values =
                 apiUrl = parsedValues.apiUrl
             }
 
-        Err e ->
+        Err e ->       
             {
                 theme = Classic,
-                apiUrl = ""
+                apiUrl = "http://api.kobonaut.com/nowhere"
             }
 
 decodeFlags : JD.Decoder Flags
@@ -82,7 +83,7 @@ decodeFlags =
 
 settingsDecoder : JD.Decoder Settings
 settingsDecoder =
-    JD.map Settings (JD.field "theme" themeDecoder)
+    JD.map Settings (JD.oneOf [JD.field "theme" themeDecoder, JD.succeed Classic])
         
 themeDecoder : JD.Decoder ThemeOption
 themeDecoder =
