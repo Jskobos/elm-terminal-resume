@@ -226,7 +226,7 @@ update msg model =
         LinkClicked urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
-                    ( model, Nav.pushUrl model.key (Url.toString url) )
+                    ( { model | feedbackResult = "" }, Nav.pushUrl model.key (Url.toString url) )
 
                 Browser.External href ->
                     ( model, Nav.load href )
@@ -659,6 +659,8 @@ feedback model =
     div [ class "flex flex-col justify-start align-center ml-2 text-left body-text" ]
         [ 
           sectionTitle "Leave Feedback"
+        , div [] [text "Please let me know what you think of this site. 1000 character maximum, plain text only."]
+        , div [class "text-sm"] [text ((String.length model.inputText |> String.fromInt) ++ "/1000")]
         , textarea [ autofocus True, value model.inputText, onInput TextInput, class "bg-black text-white text-left w-full h-full" ] []
         ]
 
