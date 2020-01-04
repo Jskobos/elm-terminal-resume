@@ -4,9 +4,9 @@ import Browser
 import Browser.Dom as Dom
 import Browser.Events exposing (onKeyDown)
 import Browser.Navigation as Nav
-import Html exposing (Html, a, div, h1, img, input, p, pre, span, text, textarea)
-import Html.Attributes exposing (autofocus, class, classList, cols, href, id, placeholder, rows, src, style, tabindex, value)
-import Html.Events exposing (on, onClick, onInput)
+import Html exposing (Html, a, div, p, span, text, textarea)
+import Html.Attributes exposing (autofocus, class, classList, href, value)
+import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as JD
 import Json.Encode as JE
@@ -685,7 +685,7 @@ theme activeTheme =
         , renderOptions activeTheme
         ]
 
-
+renderOptions : ThemeOption -> Html Msg
 renderOptions activeTheme =
     div [ class "m-2" ]
         [ div [ class "p-2 flex flex-row justify-start" ]
@@ -711,7 +711,7 @@ subscriptions model =
     in
     onKeyDown (JD.map (HandleKeyboardEvent mode) decodeKeyboardEvent)
 
-
+getMode : String -> KeyAction
 getMode v =
     case v of
         "/theme" ->
