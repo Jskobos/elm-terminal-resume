@@ -582,7 +582,7 @@ type alias WorkItem =
 
 items =
     [ WorkItem "Linode"
-        "JavaScript Developer"
+        "Software Engineer"
         "Philadelphia, PA"
         "05-01-18"
         ""
