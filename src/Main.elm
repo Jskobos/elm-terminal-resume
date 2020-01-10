@@ -14,8 +14,6 @@ import Keyboard.Event exposing (KeyboardEvent, decodeKeyboardEvent)
 import Ports
 import Task
 import Url
-import Url.Builder exposing (absolute)
-import Debug exposing (log)
 
 type alias Settings = 
     { theme : ThemeOption }
@@ -121,7 +119,7 @@ init flags url key =
 
 ---- UPDATE ----
 
-
+encodeThemeOption : ThemeOption -> String
 encodeThemeOption option =
     case option of
         Classic ->
@@ -241,9 +239,9 @@ update msg model =
 
         FeedbackPost response ->
             case response of
-                Ok r ->
+                Ok _ ->
                     ( { model | inputText = "", feedbackResult = "Feedback submitted successfully." }, Nav.pushUrl model.key "/summary")
-                Err error ->
+                Err _ ->
                     ( { model | feedbackResult = "An unexpected error occurred." } , Cmd.none)
 
         SubmitFeedback ->
@@ -361,6 +359,7 @@ view model =
     }
 
 
+topBar : Html Msg
 topBar =
     div [ class "flex flex-row items-center justify-start topbar bg-grey-darkest" ]
         [ div [ class "flex flex-row items-center justify-center pl-2" ]
@@ -383,10 +382,12 @@ dot color =
         []
 
 
+body : Model -> Html Msg
 body model =
     div [ class "terminal bg-black h-full" ] [ terminalHeader model.url.path model.activeTheme, div [ class "terminal-content" ] [ terminalContent model ], terminalFooter model.url.path model.activeTheme model.feedbackResult ]
 
 
+terminalContent : Model -> Html Msg
 terminalContent model =
     let
         themeClasses =
@@ -452,11 +453,11 @@ terminalFooter terminalView currentTheme feedbackResult =
 
     in
     div [ class "terminal-footer" ] [
-        if feedbackResult /= "" then span [class ("bg-grey-light text-black w-auto p-1")] [text ("[ " ++ feedbackResult ++ " ]")] else div [] []
+        if feedbackResult /= "" then span [class "bg-grey-light text-black w-auto p-1"] [text ("[ " ++ feedbackResult ++ " ]")] else div [] []
         , footerLinks
         ]
 
-
+terminalHeader : String -> ThemeOption -> Html Msg
 terminalHeader url activeTheme =
     let
         themeClasses =
