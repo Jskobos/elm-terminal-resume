@@ -548,7 +548,7 @@ sectionTitle : String -> Html Msg
 sectionTitle title =
     p [ class "text-2xl w-48" ] [ text title ]
 
-
+summary : Html Msg
 summary =
     div [ class "text-left ml-2 body-text" ]
         [ p [] [ text "Jared Kobos" ]
@@ -556,7 +556,7 @@ summary =
         , p [] [ text "Build things with React, Redux, Jest, Typescript, and Gatsby. Also a fan of Elm, Go, and Python." ]
         ]
 
-
+education : Html Msg
 education =
     div [ class "text-left ml-2 body-text flex flex-col justify-between h-full" ]
         [ div []
@@ -580,7 +580,7 @@ type alias WorkItem =
     , description : List String
     }
 
-
+items : Html Msg
 items =
     [ WorkItem "Linode"
         "Software Engineer"
@@ -614,7 +614,7 @@ items =
         ]
     ]
 
-
+experience : Html Msg
 experience =
     div [ class "text-left ml-2 body-text" ]
         [ sectionTitle "Work Experience"
@@ -645,7 +645,7 @@ renderDescription : String -> Html Msg
 renderDescription desc =
     p [] [ text (" - " ++ desc) ]
 
-
+links : Html Msg
 links =
     div [ class "text-left ml-2 body-text" ]
         [ sectionTitle "Links"
@@ -653,17 +653,17 @@ links =
         , renderLinkItem "https://github.com/jskobos" "GitHub Profile"
         ]
 
-
+renderLinkItem : String -> String -> Html Msg
 renderLinkItem url description =
     p [ class "mt-6 ml-4" ] [ a [ href url, class "link-item" ] [ text description ] ]
 
-
+welcome : Model -> Html Msg
 welcome model =
     div [ class "flex flex-column justify-start w-full" ]
         [ text ""
         ]
 
-
+feedback : Model -> Html Msg
 feedback model =
     div [ class "flex flex-col justify-start align-center ml-2 text-left body-text" ]
         [ 
