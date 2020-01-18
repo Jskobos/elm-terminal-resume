@@ -401,7 +401,7 @@ terminalContent model =
     div [ class themeClasses ]
         [ case model.url.path of
             "/" ->
-                welcome model
+                welcome
 
             "/summary" ->
                 summary
@@ -580,7 +580,7 @@ type alias WorkItem =
     , description : List String
     }
 
-items : Html Msg
+items : List WorkItem
 items =
     [ WorkItem "Linode"
         "Software Engineer"
@@ -657,8 +657,8 @@ renderLinkItem : String -> String -> Html Msg
 renderLinkItem url description =
     p [ class "mt-6 ml-4" ] [ a [ href url, class "link-item" ] [ text description ] ]
 
-welcome : Model -> Html Msg
-welcome model =
+welcome : Html Msg
+welcome =
     div [ class "flex flex-column justify-start w-full" ]
         [ text ""
         ]
