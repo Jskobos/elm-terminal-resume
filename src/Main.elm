@@ -273,41 +273,41 @@ getActionFromKey ctrl event =
             Nothing ->
                 Ignore
 
+getUrlFromString : String -> Maybe String
+getUrlFromString url =
+    case url of
+        "s" ->
+            Just "/summary"
+
+        "w" ->
+            Just "/experience"
+
+        "e" ->
+            Just "/education"
+
+        "f" ->
+            Just "/feedback"
+
+        "z" ->
+            Just "/language"
+
+        "t" ->
+            Just "/theme"
+
+        "l" ->
+            Just "/links"
+
+        _ ->
+            Nothing
+
 getUrlFromKey : Bool -> Maybe String -> Maybe String
 getUrlFromKey ctrl event =
     if not ctrl then
         Nothing
 
     else
-        case event of
-            Just key ->
-                case key of
-                    "s" ->
-                        Just "/summary"
-
-                    "w" ->
-                        Just "/experience"
-
-                    "e" ->
-                        Just "/education"
-
-                    "f" ->
-                        Just "/feedback"
-
-                    "z" ->
-                        Just "/language"
-
-                    "t" ->
-                        Just "/theme"
-
-                    "l" ->
-                        Just "/links"
-
-                    _ ->
-                        Nothing
-
-            Nothing ->
-                Nothing
+        Maybe.andThen getUrlFromString event
+            
 
 
 getNewTheme : Bool -> Maybe String -> Maybe ThemeOption
