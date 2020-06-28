@@ -15,19 +15,23 @@ import Ports
 import Task
 import Url
 
-type alias Settings = 
+
+type alias Settings =
     { theme : ThemeOption }
+
 
 type alias Flags =
     { settings : Settings
     , apiUrl : String
     }
 
-type alias FlagValues = 
-    {
-        theme : ThemeOption
-        , apiUrl : String
+
+type alias FlagValues =
+    { theme : ThemeOption
+    , apiUrl : String
     }
+
+
 
 ---- MODEL ----
 
@@ -49,7 +53,7 @@ type alias Model =
     , key : Nav.Key
     , url : Url.Url
     , apiUrl : String
-    , feedbackResult : String 
+    , feedbackResult : String
     }
 
 
@@ -61,16 +65,15 @@ getInitialValues values =
     in
     case result of
         Ok parsedValues ->
-            {
-                theme = parsedValues.settings.theme,
-                apiUrl = parsedValues.apiUrl
+            { theme = parsedValues.settings.theme
+            , apiUrl = parsedValues.apiUrl
             }
 
-        Err e ->       
-            {
-                theme = Classic,
-                apiUrl = "http://api.kobonaut.com/nowhere"
+        Err e ->
+            { theme = Classic
+            , apiUrl = "http://api.kobonaut.com/nowhere"
             }
+
 
 decodeFlags : JD.Decoder Flags
 decodeFlags =
@@ -81,12 +84,13 @@ decodeFlags =
 
 settingsDecoder : JD.Decoder Settings
 settingsDecoder =
-    JD.map Settings (JD.oneOf [JD.field "theme" themeDecoder, JD.succeed Classic])
-        
+    JD.map Settings (JD.oneOf [ JD.field "theme" themeDecoder, JD.succeed Classic ])
+
+
 themeDecoder : JD.Decoder ThemeOption
 themeDecoder =
     JD.string
-    |> JD.andThen
+        |> JD.andThen
             (\str ->
                 case str of
                     "Classic" ->
@@ -99,12 +103,13 @@ themeDecoder =
                         JD.fail <| "Unknown theme: " ++ somethingElse
             )
 
+
 init : JD.Value -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     let
-        values = getInitialValues flags
+        values =
+            getInitialValues flags
     in
-
     ( { key = key
       , url = url
       , activeTheme = values.theme
@@ -118,6 +123,7 @@ init flags url key =
 
 
 ---- UPDATE ----
+
 
 encodeThemeOption : ThemeOption -> String
 encodeThemeOption option =
@@ -152,8 +158,8 @@ type Msg
     | LinkClicked Browser.UrlRequest
     | UrlChanged Url.Url
     | HandleFeedback KeyboardEvent
-    | FeedbackPost ( Result Http.Error () )
-    | SubmitFeedback 
+    | FeedbackPost (Result Http.Error ())
+    | SubmitFeedback
     | ExitFeedback
 
 
@@ -163,9 +169,9 @@ update msg model =
         HandleKeyboardEvent action event ->
             let
                 -- No matter what, we clear any feedback state on any keyboard input
-                newModel = { model | feedbackResult = "" }
+                newModel =
+                    { model | feedbackResult = "" }
             in
-        
             case action of
                 ChangeTheme ->
                     update (HandleThemeInput event) newModel
@@ -196,16 +202,18 @@ update msg model =
 
         HandleFeedback event ->
             let
-                action = getActionFromKey event.ctrlKey event.key
+                action =
+                    getActionFromKey event.ctrlKey event.key
             in
             case action of
                 Submit ->
                     ( model, submitFeedback model.apiUrl model.inputText )
-                Exit ->
-                    ( { model | inputText = "" }, Nav.pushUrl model.key "/summary")
-                Ignore ->
-                    ( model, Cmd.none)
 
+                Exit ->
+                    ( { model | inputText = "" }, Nav.pushUrl model.key "/summary" )
+
+                Ignore ->
+                    ( model, Cmd.none )
 
         HandleThemeInput event ->
             let
@@ -240,38 +248,48 @@ update msg model =
         FeedbackPost response ->
             case response of
                 Ok _ ->
-                    ( { model | inputText = "", feedbackResult = "Feedback submitted successfully." }, Nav.pushUrl model.key "/summary")
+                    ( { model | inputText = "", feedbackResult = "Feedback submitted successfully." }, Nav.pushUrl model.key "/summary" )
+
                 Err _ ->
-                    ( { model | feedbackResult = "An unexpected error occurred." } , Cmd.none)
+                    ( { model | feedbackResult = "An unexpected error occurred." }, Cmd.none )
 
         SubmitFeedback ->
             ( model, submitFeedback model.apiUrl model.inputText )
 
         ExitFeedback ->
-            ( { model | inputText = "" }, Nav.pushUrl model.key "/summary")
+            ( { model | inputText = "" }, Nav.pushUrl model.key "/summary" )
 
         NoOp ->
             ( model, Cmd.none )
 
-type FeedbackAction = Submit | Exit | Ignore
+
+type FeedbackAction
+    = Submit
+    | Exit
+    | Ignore
+
 
 getActionFromKey : Bool -> Maybe String -> FeedbackAction
 getActionFromKey ctrl event =
     if not ctrl then
         Ignore
+
     else
-        case event of 
+        case event of
             Just key ->
                 case key of
                     "o" ->
                         Submit
+
                     "x" ->
                         Exit
+
                     _ ->
                         Ignore
 
             Nothing ->
                 Ignore
+
 
 getUrlFromString : String -> Maybe String
 getUrlFromString url =
@@ -300,6 +318,7 @@ getUrlFromString url =
         _ ->
             Nothing
 
+
 getUrlFromKey : Bool -> Maybe String -> Maybe String
 getUrlFromKey ctrl event =
     if not ctrl then
@@ -307,7 +326,6 @@ getUrlFromKey ctrl event =
 
     else
         Maybe.andThen getUrlFromString event
-            
 
 
 getNewTheme : Bool -> Maybe String -> Maybe ThemeOption
@@ -331,16 +349,21 @@ getNewTheme ctrl event =
             Nothing ->
                 Nothing
 
+
 feedbackRequestEncoder : String -> JE.Value
-feedbackRequestEncoder str = JE.object [ ( "feedback", JE.string str ) ]
+feedbackRequestEncoder str =
+    JE.object [ ( "feedback", JE.string str ) ]
+
 
 submitFeedback : String -> String -> Cmd Msg
 submitFeedback url str =
-    Http.post {
-        url=url,
-        body=( Http.jsonBody <| feedbackRequestEncoder str ),
-        expect= Http.expectWhatever FeedbackPost 
-    }
+    Http.post
+        { url = url
+        , body = Http.jsonBody <| feedbackRequestEncoder str
+        , expect = Http.expectWhatever FeedbackPost
+        }
+
+
 
 ---- VIEW ----
 
@@ -426,36 +449,40 @@ terminalContent model =
         ]
 
 
-terminalFooter : String -> ThemeOption -> String ->  Html Msg
+terminalFooter : String -> ThemeOption -> String -> Html Msg
 terminalFooter terminalView currentTheme feedbackResult =
     let
         footer =
             footerItem currentTheme
+
         footerLinks =
             case terminalView of
-                    "/feedback" ->
-                        div [ class "flex flex-row flex-nowrap justify-start" ]
-                            [
-                                footer "^X" "Exit" "/summary" ExitFeedback
-                            ,   footer "^O" "WriteOut (Submit Feedback)" "/summary" SubmitFeedback
-                            ]
-                        
-                    _ ->
-                        div [ class "flex flex-row flex-nowrap justify-between" ]
-                            [ footer "^S" "Summary" "/summary" NoOp
-                            , footer "^W" "Work Experience" "/experience" NoOp
-                            , footer "^E" "Education" "/education" NoOp
-                            , footer "^L" "Links" "/links" NoOp
-                            , footer "^F" "Leave feedback" "/feedback" NoOp
-                            , footer "^Z" "Change Language" "/language" NoOp
-                            , footer "^T" "Change Theme" "/theme" NoOp
-                            ]
+                "/feedback" ->
+                    div [ class "flex flex-row flex-nowrap justify-start" ]
+                        [ footer "^X" "Exit" "/summary" ExitFeedback
+                        , footer "^O" "WriteOut (Submit Feedback)" "/summary" SubmitFeedback
+                        ]
 
+                _ ->
+                    div [ class "flex flex-row flex-nowrap justify-between" ]
+                        [ footer "^S" "Summary" "/summary" NoOp
+                        , footer "^W" "Work Experience" "/experience" NoOp
+                        , footer "^E" "Education" "/education" NoOp
+                        , footer "^L" "Links" "/links" NoOp
+                        , footer "^F" "Leave feedback" "/feedback" NoOp
+                        , footer "^Z" "Change Language" "/language" NoOp
+                        , footer "^T" "Change Theme" "/theme" NoOp
+                        ]
     in
-    div [ class "terminal-footer" ] [
-        if feedbackResult /= "" then span [class "bg-grey-light text-black w-auto p-1"] [text ("[ " ++ feedbackResult ++ " ]")] else div [] []
+    div [ class "terminal-footer" ]
+        [ if feedbackResult /= "" then
+            span [ class "bg-grey-light text-black w-auto p-1" ] [ text ("[ " ++ feedbackResult ++ " ]") ]
+
+          else
+            div [] []
         , footerLinks
         ]
+
 
 terminalHeader : String -> ThemeOption -> Html Msg
 terminalHeader url activeTheme =
@@ -548,13 +575,15 @@ sectionTitle : String -> Html Msg
 sectionTitle title =
     p [ class "text-2xl w-48" ] [ text title ]
 
+
 summary : Html Msg
 summary =
     div [ class "text-left ml-2 body-text" ]
         [ p [] [ text "Jared Kobos" ]
-        , p [] [ text "JavaScript Developer at Linode" ]
+        , p [] [ text "Senior Software Engineer at Linode" ]
         , p [] [ text "Build things with React, Redux, Jest, Typescript, and Gatsby. Also a fan of Elm, Go, and Python." ]
         ]
+
 
 education : Html Msg
 education =
@@ -580,16 +609,23 @@ type alias WorkItem =
     , description : List String
     }
 
+
 items : List WorkItem
 items =
     [ WorkItem "Linode"
-        "Software Engineer"
+        "Senior Software Engineer"
         "Philadelphia, PA"
-        "05-01-18"
+        "02-03-20"
         ""
         [ "Build and maintain features for front end applications"
         , "Research and implement patterns to improve the codebase"
         ]
+    , WorkItem "Linode"
+        "Software Engineer"
+        "Philadelphia, PA"
+        "05-01-18"
+        "02-03-20"
+        []
     , WorkItem "Linode"
         "Technical Writer"
         "Philadelphia, PA"
@@ -613,6 +649,7 @@ items =
         [ "Teach English to Chinese kids"
         ]
     ]
+
 
 experience : Html Msg
 experience =
@@ -645,6 +682,7 @@ renderDescription : String -> Html Msg
 renderDescription desc =
     p [] [ text (" - " ++ desc) ]
 
+
 links : Html Msg
 links =
     div [ class "text-left ml-2 body-text" ]
@@ -653,9 +691,11 @@ links =
         , renderLinkItem "https://github.com/jskobos" "GitHub Profile"
         ]
 
+
 renderLinkItem : String -> String -> Html Msg
 renderLinkItem url description =
     p [ class "mt-6 ml-4" ] [ a [ href url, class "link-item" ] [ text description ] ]
+
 
 welcome : Html Msg
 welcome =
@@ -663,13 +703,13 @@ welcome =
         [ text ""
         ]
 
+
 feedback : Model -> Html Msg
 feedback model =
     div [ class "flex flex-col justify-start align-center ml-2 text-left body-text" ]
-        [ 
-          sectionTitle "Leave Feedback"
-        , div [] [text "Please let me know what you think of this site. 1000 character maximum, plain text only."]
-        , div [class "text-sm"] [text ((String.length model.inputText |> String.fromInt) ++ "/1000")]
+        [ sectionTitle "Leave Feedback"
+        , div [] [ text "Please let me know what you think of this site. 1000 character maximum, plain text only." ]
+        , div [ class "text-sm" ] [ text ((String.length model.inputText |> String.fromInt) ++ "/1000") ]
         , textarea [ autofocus True, value model.inputText, onInput TextInput, class "bg-black text-white text-left w-full h-full" ] []
         ]
 
@@ -685,6 +725,7 @@ theme activeTheme =
         [ sectionTitle "Choose a Theme"
         , renderOptions activeTheme
         ]
+
 
 renderOptions : ThemeOption -> Html Msg
 renderOptions activeTheme =
@@ -711,6 +752,7 @@ subscriptions model =
             getMode model.url.path
     in
     onKeyDown (JD.map (HandleKeyboardEvent mode) decodeKeyboardEvent)
+
 
 getMode : String -> KeyAction
 getMode v =
