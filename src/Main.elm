@@ -469,9 +469,8 @@ terminalFooter terminalView currentTheme feedbackResult =
                         , footer "^W" "Work Experience" "/experience" NoOp
                         , footer "^E" "Education" "/education" NoOp
                         , footer "^L" "Links" "/links" NoOp
-                        , footer "^F" "Leave feedback" "/feedback" NoOp
                         , footer "^Z" "Change Language" "/language" NoOp
-                        , footer "^T" "Change Theme" "/theme" NoOp
+                        , footer "^F" "Leave feedback" "/feedback" NoOp
                         ]
     in
     div [ class "terminal-footer" ]
@@ -617,36 +616,31 @@ items =
         "Philadelphia, PA"
         "02-03-20"
         ""
-        [ "Build and maintain features for front end applications"
-        , "Research and implement patterns to improve the codebase"
+        [ "Work with UI/UX designs, user feedback, and stakeholders to determine feature requirements."
+        , "Improve code quality and application performance, including reducingpage load times by 30% and reducing API bandwidth usage by 50%."
+        , "Make contributions to back-end code."
+        , "Publish and maintain the open-source @linode/api-v4 NPM package."
+        , "Identify issues and areas for improvement and work to reduce technical debt."
+        , "Mentor new team members."
+        , "Give technical presentations to the team, department, and company."
         ]
     , WorkItem "Linode"
         "Software Engineer"
         "Philadelphia, PA"
         "05-01-18"
         "02-03-20"
-        []
+        [ "Planned and implemented features in front end applications."
+        , "Researched and presented patterns to improve application maintainability and performance."
+        , "Integrated third-party services for feature flagging and search."
+        , "Wrote unit and end-to-end tests."
+        ]
     , WorkItem "Linode"
         "Technical Writer"
         "Philadelphia, PA"
         "09-06-17"
         "05-01-18"
-        [ "Write, edit, and tech edit documentation on Linux-related topics"
-        , "Use continuous integration and scripting to improve quality of documentation library"
-        ]
-    , WorkItem "EF Education First"
-        "Content Writer"
-        "Shanghai, CN"
-        "02-04-16"
-        "08-21-17"
-        [ "Write textbook and online content for an international education company"
-        ]
-    , WorkItem "EF Education First"
-        "International Teacher"
-        "Shanghai, CN"
-        "07-18-13"
-        "02-04-16"
-        [ "Teach English to Chinese kids"
+        [ "Wrote, edited, and tech edited documentation on Linux-related topics"
+        , "Used continuous integration and scripting to improve quality of documentation library"
         ]
     ]
 
