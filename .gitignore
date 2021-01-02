@@ -18,3 +18,6 @@ proper-keyboard/
 
 # Environment variables
 .env
+
+# Built html file
+index.html
