@@ -616,22 +616,19 @@ items =
         "Philadelphia, PA"
         "02-03-20"
         ""
-        [
-        ]
+        []
     , WorkItem "Linode"
         "Software Engineer"
         "Philadelphia, PA"
         "05-01-18"
         "02-03-20"
-        [ 
-        ]
+        []
     , WorkItem "Linode"
         "Technical Writer"
         "Philadelphia, PA"
         "09-06-17"
         "05-01-18"
-        [ 
-        ]
+        []
     ]
 
 
