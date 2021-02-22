@@ -1,0 +1,20 @@
+{
+  "engineer": [
+    "Planned and implemented features in front end applications.",
+    "Researched and presented patterns to improve application maintainability and performance.",
+    "Integrated third-party services for feature flagging and search.",
+    "Wrote unit and end-to-end tests."
+  ],
+  "linodeTechWriter": [
+    "Wrote, edited, and tech edited documentation on Linux-related topics",
+    "Used continuous integration and scripting to improve quality of documentation library"
+  ],
+  "seniorEngineer": [
+    "Work with UI/UX designs, user feedback, and stakeholders to determine feature requirements.",
+    "Make contributions to back-end code.",
+    "Publish and maintain the open-source @linode/api-v4 NPM package.",
+    "Identify issues and areas for improvement and work to reduce technical debt.",
+    "Mentor new team members.",
+    "Give technical presentations to the team, department, and company."
+  ]
+}

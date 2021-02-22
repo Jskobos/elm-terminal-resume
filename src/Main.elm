@@ -616,31 +616,21 @@ items =
         "Philadelphia, PA"
         "02-03-20"
         ""
-        [ "Work with UI/UX designs, user feedback, and stakeholders to determine feature requirements."
-        , "Improve code quality and application performance, including reducingpage load times by 30% and reducing API bandwidth usage by 50%."
-        , "Make contributions to back-end code."
-        , "Publish and maintain the open-source @linode/api-v4 NPM package."
-        , "Identify issues and areas for improvement and work to reduce technical debt."
-        , "Mentor new team members."
-        , "Give technical presentations to the team, department, and company."
+        [
         ]
     , WorkItem "Linode"
         "Software Engineer"
         "Philadelphia, PA"
         "05-01-18"
         "02-03-20"
-        [ "Planned and implemented features in front end applications."
-        , "Researched and presented patterns to improve application maintainability and performance."
-        , "Integrated third-party services for feature flagging and search."
-        , "Wrote unit and end-to-end tests."
+        [ 
         ]
     , WorkItem "Linode"
         "Technical Writer"
         "Philadelphia, PA"
         "09-06-17"
         "05-01-18"
-        [ "Wrote, edited, and tech edited documentation on Linux-related topics"
-        , "Used continuous integration and scripting to improve quality of documentation library"
+        [ 
         ]
     ]
 
