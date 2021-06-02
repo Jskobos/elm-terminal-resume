@@ -579,8 +579,8 @@ summary : Html Msg
 summary =
     div [ class "text-left ml-2 body-text" ]
         [ p [] [ text "Jared Kobos" ]
-        , p [] [ text "Senior Software Engineer at Linode" ]
-        , p [] [ text "Build things with React, Redux, Jest, Typescript, and Gatsby. Also a fan of Elm, Go, and Python." ]
+        , p [] [ text "Senior Software Engineer at Zendesk" ]
+        , p [] [ text "Build things with React, Redux, Jest, and Typescript. Also a fan of Elm, Go, and Python." ]
         ]
 
 
@@ -611,11 +611,17 @@ type alias WorkItem =
 
 items : List WorkItem
 items =
-    [ WorkItem "Linode"
+    [  WorkItem "Zendesk"
+        "Senior Software Engineer"
+        "Remote"
+        "05-24-21"
+        ""
+        []
+    , WorkItem "Linode"
         "Senior Software Engineer"
         "Philadelphia, PA"
         "02-03-20"
-        ""
+        "05-20-21"
         []
     , WorkItem "Linode"
         "Software Engineer"
@@ -668,7 +674,6 @@ links : Html Msg
 links =
     div [ class "text-left ml-2 body-text" ]
         [ sectionTitle "Links"
-        , renderLinkItem "https://github.com/linode/manager" "Current open-source work project"
         , renderLinkItem "https://github.com/jskobos" "GitHub Profile"
         ]
 
