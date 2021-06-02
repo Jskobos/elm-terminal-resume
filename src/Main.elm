@@ -674,7 +674,6 @@ links : Html Msg
 links =
     div [ class "text-left ml-2 body-text" ]
         [ sectionTitle "Links"
-        , renderLinkItem "https://github.com/linode/manager" "Current open-source work project"
         , renderLinkItem "https://github.com/jskobos" "GitHub Profile"
         ]
 
