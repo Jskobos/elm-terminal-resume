@@ -444,8 +444,11 @@ terminalContent model =
             "/theme" ->
                 theme model.activeTheme
 
-            _ ->
+            "/language" ->
                 text "Section coming soon"
+
+            _ ->
+                text "404 Not Found"
         ]
 
 
